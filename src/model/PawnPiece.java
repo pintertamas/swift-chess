@@ -16,31 +16,46 @@ public class PawnPiece extends Piece {
 
     @Override
     public boolean canMoveTo(int newX, int newY) {
+
         if (newX > 8 || newX < 0 || newY > 8 || newY < 0)
             return false;
-       /* int direction = getColor() == PieceColor.WHITE ? 1 : -1;
-        if (direction == 1 && !(newX < getLocationOnX() - 1 || newX > getLocationOnX() + 1)) {
-            if (newY == getLocationOnY() + direction)
-                return true;
-            if (newY == getLocationOnY() + 2 * direction && firstMove) {
-                firstMove = false;
-                return true;
-            }
-        } else if (!(newX < getLocationOnX() - 1 || newX > getLocationOnX() + 1)){
-            if (newY == getLocationOnY() + direction)
-                return true;
-            if (newY == getLocationOnY() + 2 * direction && firstMove) {
-                firstMove = false;
-                return true;
+
+        if (getColor() == PieceColor.WHITE) {
+            // we can move upwards
+            if (newX <= getCurrentLocation().x + 1 && newX >= getCurrentLocation().x - 1) {
+                if (newY == getCurrentLocation().y - 1) {
+                    return true;
+                }
+                if (newY == getCurrentLocation().y - 2 && firstMove && newX == getCurrentLocation().x) {
+                    firstMove = false;
+                    return true;
+                }
             }
         }
-        return false;*/
-        return true;
+
+        if (getColor() == PieceColor.BLACK) {
+            // we can move downwards
+            if (newX <= getCurrentLocation().x + 1 && newX >= getCurrentLocation().x - 1) {
+                if (newY == getCurrentLocation().y + 1) {
+                    return true;
+                }
+                if (newY == getCurrentLocation().y + 2 && firstMove && newX == getCurrentLocation().x) {
+                    firstMove = false;
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override
-    public boolean validMoveTo(int newX, int newY, ArrayList<Piece> pieces) {
-        //TODO: check whether the pawn is allowed to move to the specified position
+    public boolean freeToMove(int newX, int newY, ArrayList<Piece> pieces) {
+        return false;
+    }
+
+    @Override
+    public boolean wontLoseTheGame(int newX, int newY, ArrayList<Piece> pieces) {
         return false;
     }
 

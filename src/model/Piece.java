@@ -8,14 +8,16 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class Piece extends JLabel implements Serializable, Cloneable {
+public abstract class Piece extends JLabel implements Serializable {
 
     protected PieceColor color;
     protected int boardLocation;
     protected Point lastLocation;
+    protected Point currentLocation;
 
     public Piece(PieceColor color, int location) {
-        super(Functions.getImage("pawn_black.png"));
+        // it centers the image
+        super(Functions.getImage("blank.png"));
         this.color = color;
         this.boardLocation = location;
     }
@@ -26,7 +28,6 @@ public abstract class Piece extends JLabel implements Serializable, Cloneable {
 
     public void setLastLocation(Point lastLocation) {
         this.lastLocation = lastLocation;
-        System.out.println("lastlocation: " + lastLocation);
     }
 
     public Point getLastLocation() {
@@ -43,14 +44,28 @@ public abstract class Piece extends JLabel implements Serializable, Cloneable {
 
     public abstract boolean canMoveTo(int newX, int newY);
 
-    public abstract boolean validMoveTo(int newX, int newY, ArrayList<Piece> pieces);
+    public abstract boolean freeToMove(int newX, int newY, ArrayList<Piece> pieces);
 
-    public int getLocationOnX() {
+    public abstract boolean wontLoseTheGame(int newX, int newY, ArrayList<Piece> pieces);
+
+    public int getXLocationFromComponentNumber() {
         return boardLocation - (boardLocation / 8) * 8 + 1;
     }
 
-    public int getLocationOnY() {
+    public int getYLocationFromComponentNumber() {
         return boardLocation / 8 + 1;
+    }
+
+    public void setCurrentLocation(int posX, int posY) {
+        currentLocation = new Point(posX, posY);
+    }
+
+    public void setCurrentLocation(Point currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    public Point getCurrentLocation() {
+        return currentLocation;
     }
 
     public abstract ImageIcon getWhiteImage();

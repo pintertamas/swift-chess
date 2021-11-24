@@ -18,6 +18,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     int yAdjustment;
     ArrayList<Piece> pieces;
 
+
     public ChessBoard() {
         Dimension boardSize = new Dimension(640, 640);
         layeredPane = new JLayeredPane();
@@ -45,17 +46,17 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
 
         JPanel panel = (JPanel) chessBoard.getComponent(0);
-        initWhitePieces(panel);
-        initBlackPieces(panel);
+        addWhitePieces();
+        addBlackPieces();
         drawPieces(panel, pieces);
     }
 
-    private void initWhitePieces(JPanel panel) {
-        addPawns(pieces, PieceColor.WHITE, 8);
+    private void addWhitePieces() {
+        addPawns(pieces, PieceColor.WHITE, 48);
     }
 
-    private void initBlackPieces(JPanel panel) {
-        addPawns(pieces, PieceColor.BLACK, 48);
+    private void addBlackPieces() {
+        addPawns(pieces, PieceColor.BLACK, 8);
     }
 
 
@@ -71,6 +72,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         for (int i = from; i < from + 8; i++) {
             piece = new PawnPiece(color, i);
             piece.setIcon(piece.getImage());
+            piece.setCurrentLocation(new Point(piece.getXLocationFromComponentNumber(), piece.getYLocationFromComponentNumber()));
             pieces.add(piece);
         }
     }
@@ -89,8 +91,6 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         chessPiece = (Piece) c;
         chessPiece.setLocation(e.getX() + xAdjustment, e.getY() + yAdjustment);
         chessPiece.setLastLocation(chessPiece.getLocation());
-        System.out.println(((Piece) c).getLocationOnX());
-        System.out.println(((Piece) c).getLocationOnY());
         chessPiece.setSize(chessPiece.getWidth(), chessPiece.getHeight());
         layeredPane.add(chessPiece, JLayeredPane.DRAG_LAYER);
     }
@@ -110,21 +110,13 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         if (chessPiece.canMoveTo(newX, newY)) {
             chessPiece.setVisible(false);
             component = chessBoard.findComponentAt(e.getX(), e.getY());
+            chessPiece.setCurrentLocation(newX, newY);
         } else {
             chessPiece.setVisible(false);
             chessPiece.setLocation(chessPiece.getLastLocation());
             component = chessBoard.findComponentAt(chessPiece.getLocation());
         }
-        Container parent;
-
-        if (component.getClass().equals(JFrame.class)) {
-            parent = component.getParent();
-            System.out.println(e.getX() + " " + e.getY());
-            System.out.println("removed component: " + parent.getComponent(0));
-            parent.remove(0);
-        } else {
-            parent = (Container) component;
-        }
+        Container parent = (Container) component;
         parent.add(chessPiece);
         chessPiece.setVisible(true);
     }
