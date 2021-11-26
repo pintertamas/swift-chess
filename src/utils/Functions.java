@@ -23,4 +23,8 @@ public class Functions {
     public static int getLocationOnY(int posY, int height) {
         return (int)Math.ceil((double)posY / height * 8);
     }
+
+    public static boolean isOutside(int newX, int newY) {
+        return newX > 8 || newX <= 0 || newY > 8 || newY <= 0;
+    }
 }
