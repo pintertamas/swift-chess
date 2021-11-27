@@ -1,5 +1,5 @@
 package utils;
 
-public enum Piece {
+public enum PieceType {
     BISHOP, KING, KNIGHT, PAWN, QUEEN, ROOK
 }

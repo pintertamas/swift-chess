@@ -2,6 +2,7 @@ package model;
 
 import utils.Functions;
 import utils.PieceColor;
+import utils.PieceType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,18 +14,17 @@ public class KingPiece extends Piece {
     }
 
     @Override
-    public boolean[][] getMoves(ArrayList<Piece> pieces) {
-        return new boolean[0][];
-    }
-
-    @Override
-    public boolean[][] addHittingMovesTo(Point newLocation, boolean[][] moves) {
-        return moves;
-    }
-
-    @Override
-    public boolean[][] getHittingMovesFrom(Point fromLocation) {
-        return new boolean[0][];
+    public boolean[][] getMoves(Point from, ArrayList<Piece> pieces) {
+        boolean[][] movingPoints = new boolean[8][8];
+        if (this.freeToMoveTo(from.x - 1, from.y, pieces)) movingPoints[from.x - 1 - 1][from.y - 1] = true;
+        if (this.freeToMoveTo(from.x - 1, from.y - 1, pieces)) movingPoints[from.x - 1 - 1][from.y - 1 - 1] = true;
+        if (this.freeToMoveTo(from.x - 1, from.y + 1, pieces)) movingPoints[from.x - 1 - 1][from.y + 1 - 1] = true;
+        if (this.freeToMoveTo(from.x, from.y - 1, pieces)) movingPoints[from.x - 1][from.y - 1 - 1] = true;
+        if (this.freeToMoveTo(from.x, from.y + 1, pieces)) movingPoints[from.x - 1][from.y + 1 - 1] = true;
+        if (this.freeToMoveTo(from.x + 1, from.y, pieces)) movingPoints[from.x + 1 - 1][from.y - 1] = true;
+        if (this.freeToMoveTo(from.x + 1, from.y - 1, pieces)) movingPoints[from.x + 1 - 1][from.y - 1 - 1] = true;
+        if (this.freeToMoveTo(from.x + 1, from.y + 1, pieces)) movingPoints[from.x + 1 - 1][from.y + 1 - 1] = true;
+        return movingPoints;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class KingPiece extends Piece {
     }
 
     @Override
-    public utils.Piece getType() {
-        return utils.Piece.KING;
+    public PieceType getType() {
+        return PieceType.KING;
     }
 }

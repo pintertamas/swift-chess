@@ -2,6 +2,7 @@ package model;
 
 import utils.PieceColor;
 import utils.Functions;
+import utils.PieceType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,97 +17,76 @@ public class PawnPiece extends Piece {
     }
 
     @Override
-    public boolean[][] getMoves(ArrayList<Piece> pieces) {
-        /*if (Functions.isOutside(newX, newY))
-            return false;
-        if (newX <= getCurrentLocation().x + 1 && newX >= getCurrentLocation().x - 1) {
-            int direction = getColor() == PieceColor.WHITE ? 1 : -1;
-
-            if ((newY == getCurrentLocation().y - direction)
-                    || (newY == getCurrentLocation().y - 2 * direction && firstMove && newX == getCurrentLocation().x)) {
-                firstMove = false;
-                return true;
-            }
-
-            if ((newY == getCurrentLocation().y + direction)
-                    || (newY == getCurrentLocation().y + 2 * direction && firstMove && newX == getCurrentLocation().x)) {
-                firstMove = false;
-                return true;
-            }
-        }
-        return false;*/
+    public boolean[][] getMoves(Point from, ArrayList<Piece> pieces) {
         boolean[][] movingPoints = new boolean[8][8];
         int direction = getColor() == PieceColor.WHITE ? 1 : -1;
-        int newY = currentLocation.y - 2 * direction;
-        if (firstMove && newY <= 8 && newY > 0) {
-            movingPoints[currentLocation.x][newY] = true;
+        int newYDoubleStep = from.y - 2 * direction;
+        int newYSingleStep = from.y - direction;
+        boolean isBlocked = false;
+        if (newYSingleStep <= 8 && newYSingleStep > 0) {
+            for (Piece piece : pieces) {
+                if (piece.getCurrentLocation().equals(new Point(from.x, newYSingleStep))) {
+                    isBlocked = true;
+                    break;
+                }
+            }
+            movingPoints[from.x - 1][newYSingleStep - 1] = !isBlocked;
         }
-        newY = currentLocation.y - direction;
-        if (newY <= 8 && newY > 0) {
-            movingPoints[currentLocation.x][newY] = true;
+        if (firstMove && newYDoubleStep <= 8 && newYDoubleStep > 0) {
+            for (Piece piece : pieces) {
+                if (piece.getCurrentLocation().equals(new Point(from.x, newYDoubleStep))) {
+                    isBlocked = true;
+                    break;
+                }
+            }
+            movingPoints[from.x - 1][newYDoubleStep - 1] = !isBlocked;
+        }
+        int newX = from.x - 1;
+        handleHittingMoves(pieces, movingPoints, newYSingleStep, newX);
+        newX = from.x + 1;
+        handleHittingMoves(pieces, movingPoints, newYSingleStep, newX);
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                System.out.print(movingPoints[j][i] ? "1 " : "0 ");
+            }
+            System.out.println();
         }
 
         return movingPoints;
     }
 
     @Override
-    public boolean freeToMove(int newX, int newY, ArrayList<Piece> pieces) {
-        for (Piece piece : pieces) {
-            if (piece.getColor().equals(this.getColor())) {
-                if (piece.getCurrentLocation().equals(new Point(newX, newY))) {
-                    return false;
-                }
-            } else if (piece.getCurrentLocation().equals(new Point(newX, newY)) && newX == currentLocation.x) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public boolean[][] addHittingMovesTo(Point newLocation, boolean[][] moves) {
-        /*
-        int direction = getColor() == PieceColor.WHITE ? 1 : -1;
-        int newX = currentLocation.x - 1;
-        int newY = currentLocation.y - direction;
-        if (!Functions.isOutside(newX, newY))
-            moves[newX - 1][newY - 1] = true;
-        newX = currentLocation.x + 1;
-        newY = currentLocation.y - direction;
-        if (!Functions.isOutside(newX, newY))
-            moves[newX - 1][newY - 1] = true;
-        */
-        boolean[][] hits = getHittingMovesFrom(newLocation);
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if (hits[i][j])
-                    moves[i][j] = true;
-            }
-        }
-
+    public boolean[][] addMovesTo(boolean[][] moves, Point from, ArrayList<Piece> pieces) {
+        boolean[][] hittingMoves = super.addMovesTo(moves, from, pieces);
         System.out.println();
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                System.out.print(hits[i][j] ? 1 + " " : 0 + " ");
-            }
-            System.out.println();
-        }
-        return moves;
-    }
-
-    @Override
-    public boolean[][] getHittingMovesFrom(Point fromLocation) {
-        boolean[][] hittingMoves = new boolean[8][8];
         int direction = getColor() == PieceColor.WHITE ? 1 : -1;
-        int hitX = fromLocation.x - 1;
-        int hitY = fromLocation.y - direction;
-        if (hitX > 0 && hitY > 0 && hitY <= 8)
-            hittingMoves[hitX][hitY] = true;
-        hitX = fromLocation.x + 1;
-        if (hitX <= 8)
-            hittingMoves[hitX][hitY] = true;
+
+        if (!Functions.isOutside(from.y - direction))
+            hittingMoves[from.y - direction - 1][from.x - 1] = false;
+
+        if (!Functions.isOutside(from.y - 2 * direction))
+            hittingMoves[from.y - 2 * direction - 1][from.x - 1] = false;
+
 
         return hittingMoves;
+    }
+
+    private void handleHittingMoves(ArrayList<Piece> pieces, boolean[][] movingPoints, int newYSingleStep, int newX) {
+        if (!Functions.isOutside(newX, newYSingleStep)) {
+            //for (Piece piece : pieces) {
+                //if (piece.getCurrentLocation().equals(new Point(newX, newYSingleStep)) && piece.getColor() != getColor() || true) {
+                    movingPoints[newX - 1][newYSingleStep - 1] = true;
+                    //break;
+                //}
+            //}
+        }
+    }
+
+    @Override
+    public void move(int newX, int newY, ArrayList<Piece> pieces) {
+        super.move(newX, newY, pieces);
+        this.firstMove = false;
     }
 
     @Override
@@ -120,7 +100,7 @@ public class PawnPiece extends Piece {
     }
 
     @Override
-    public utils.Piece getType() {
-        return utils.Piece.PAWN;
+    public PieceType getType() {
+        return PieceType.PAWN;
     }
 }

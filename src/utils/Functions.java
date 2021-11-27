@@ -2,7 +2,9 @@ package utils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Functions {
@@ -24,7 +26,15 @@ public class Functions {
         return (int)Math.ceil((double)posY / height * 8);
     }
 
+    public static boolean isOutside(Point p) {
+        return p.x > 8 || p.x <= 0 || p.y > 8 || p.y <= 0;
+    }
+
     public static boolean isOutside(int newX, int newY) {
         return newX > 8 || newX <= 0 || newY > 8 || newY <= 0;
+    }
+
+    public static boolean isOutside(int newX) {
+        return newX > 8 || newX <= 0;
     }
 }

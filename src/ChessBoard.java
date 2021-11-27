@@ -58,12 +58,12 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
 
     private void addWhitePieces() {
         addPawns(pieces, PieceColor.WHITE, 48);
-        addRoyalFamily(pieces, PieceColor.WHITE, 59, 60);
+        addRoyalFamily(pieces, PieceColor.WHITE, 60, 59);
     }
 
     private void addBlackPieces() {
         addPawns(pieces, PieceColor.BLACK, 8);
-        addRoyalFamily(pieces, PieceColor.BLACK, 4, 3);
+        addRoyalFamily(pieces, PieceColor.BLACK, 3, 4);
     }
 
 
@@ -117,37 +117,37 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         int newY = Functions.getLocationOnY(e.getY(), chessBoard.getSize().height);
         Component component;
 
-        if ((isYourTurn()
-                && chessPiece.canMoveTo(newX, newY, pieces)
-                && chessPiece.freeToMove(newX, newY, pieces))) {
-            if (wasNotInChess() && (!chessPiece.causesChessToSelectedTeam(new Point(newX, newY), pieces, chessPiece.getColor()))) {
-                giveChess(newX, newY);
+        if ((isYourTurn() && chessPiece.canMoveTo(newX, newY, pieces))) {
+            System.out.println(chessPiece.getType());
+            if ((wasNotInChess() && (!chessPiece.selectedTeamIsInChess(new Point(newX, newY), pieces, chessPiece.getColor())))) {
+                checkChess(newX, newY);
+                chessPiece.move(newX, newY, pieces);
+                component = chessBoard.findComponentAt(e.getX(), e.getY());
+                whiteTurn = !whiteTurn;
+            } else if (!wasNotInChess() && chessPiece.selectedTeamIsInChess(new Point(newX, newY), pieces, chessPiece.getColor())) {
+                revokeChess();
+                chessPiece.move(newX, newY, pieces);
+                component = chessBoard.findComponentAt(e.getX(), e.getY());
+                whiteTurn = !whiteTurn;
+            } else {
+                component = cannotMove();
             }
-            if (!wasNotInChess() && chessPiece.possibleToStopChess(new Point(newX, newY), pieces)) {
-                System.out.println("Saved!");
-                revokeChess(newX, newY);
-            }
-            chessPiece.handleHits(newX, newY, pieces);
-            chessPiece.setVisible(false);
-            component = chessBoard.findComponentAt(e.getX(), e.getY());
-            chessPiece.setCurrentLocation(newX, newY);
-            whiteTurn = !whiteTurn;
         } else {
             component = cannotMove();
         }
         Container parent = (Container) component;
         parent.add(chessPiece);
         chessPiece.setVisible(true);
+        checkChess(chessPiece.getCurrentLocation().x, chessPiece.getCurrentLocation().y);
     }
 
     private boolean isYourTurn() {
         return chessPiece.getColor() == PieceColor.WHITE && whiteTurn || (chessPiece.getColor() == PieceColor.BLACK && !whiteTurn);
     }
 
-    private void giveChess(int newX, int newY) {
-        System.out.println("Give chess");
+    private void checkChess(int newX, int newY) {
         PieceColor enemyColor = chessPiece.getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-        if (chessPiece.causesChessToSelectedTeam(new Point(newX, newY), pieces, enemyColor)) {
+        if (chessPiece.selectedTeamIsInChess(new Point(newX, newY), pieces, enemyColor)) {
             if (enemyColor == PieceColor.WHITE) {
                 whiteChess = true;
                 System.out.println("Black says: CHESS!");
@@ -158,16 +158,14 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
     }
 
-    private void revokeChess(int newX, int newY) {
+    private void revokeChess() {
         PieceColor enemyColor = chessPiece.getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-        if (chessPiece.causesChessToSelectedTeam(new Point(newX, newY), pieces, enemyColor)) {
-            if (enemyColor == PieceColor.WHITE) {
-                whiteChess = false;
-                System.out.println("Black saved");
-            } else {
-                blackChess = false;
-                System.out.println("White saved");
-            }
+        if (enemyColor == PieceColor.WHITE) {
+            blackChess = false;
+            System.out.println("Black saved");
+        } else {
+            whiteChess = false;
+            System.out.println("White saved");
         }
     }
 
@@ -182,24 +180,19 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         return chessBoard.findComponentAt(chessPiece.getLocation());
     }
 
-    public void printBoard(boolean[][] dangerZone) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                System.out.print(dangerZone[j][i] ? 1 + " " : 0 + " ");
-            }
-            System.out.println();
-        }
-    }
-
     public void mouseClicked(MouseEvent e) {
         if (chessPiece != null) {
-            Piece queen = new QueenPiece(chessPiece.getColor(), 0);
-            queen.setCurrentLocation(chessPiece.getLastLocation());
-            queen.setSize(chessPiece.getWidth(), chessPiece.getHeight());
-            queen.setIcon(queen.getImage());
-            chessPiece.getParent().add(queen);
-            pieces.add(queen);
-            chessPiece.removeFrom(pieces);
+            if (chessPiece.getType() == PieceType.PAWN
+                    && (chessPiece.getCurrentLocation().y == 1
+                    || chessPiece.getCurrentLocation().y == 8)) {
+                Piece queen = new QueenPiece(chessPiece.getColor(), 0);
+                queen.setCurrentLocation(chessPiece.getLastLocation());
+                queen.setSize(chessPiece.getWidth(), chessPiece.getHeight());
+                queen.setIcon(queen.getImage());
+                chessPiece.getParent().add(queen);
+                pieces.add(queen);
+                chessPiece.removeFrom(pieces);
+            }
         }
     }
 

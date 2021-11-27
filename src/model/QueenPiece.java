@@ -2,6 +2,7 @@ package model;
 
 import utils.Functions;
 import utils.PieceColor;
+import utils.PieceType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,18 +14,8 @@ public class QueenPiece extends Piece {
     }
 
     @Override
-    public boolean[][] getMoves(ArrayList<Piece> pieces) {
-        return new boolean[0][];
-    }
-
-    @Override
-    public boolean[][] addHittingMovesTo(Point newLocation, boolean[][] moves) {
-        return moves;
-    }
-
-    @Override
-    public boolean[][] getHittingMovesFrom(Point fromLocation) {
-        return new boolean[0][];
+    public boolean[][] getMoves(Point from, ArrayList<Piece> pieces) {
+        return new boolean[8][8];
     }
 
     @Override
@@ -38,7 +29,7 @@ public class QueenPiece extends Piece {
     }
 
     @Override
-    public utils.Piece getType() {
-        return utils.Piece.QUEEN;
+    public PieceType getType() {
+        return PieceType.QUEEN;
     }
 }

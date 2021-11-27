@@ -2,6 +2,7 @@ package model;
 
 import utils.Functions;
 import utils.PieceColor;
+import utils.PieceType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,87 +45,72 @@ public abstract class Piece extends JLabel implements Serializable {
         return color == PieceColor.WHITE ? getWhiteImage() : getBlackImage();
     }
 
-    public abstract boolean[][] getMoves(ArrayList<Piece> pieces);
+    public abstract boolean[][] getMoves(Point from, ArrayList<Piece> pieces);
 
     public boolean canMoveTo(int newX, int newY, ArrayList<Piece> pieces) {
-        for (Piece piece : pieces) {
-            if (getHittingMovesFrom(new Point(newX, newY))[piece.getCurrentLocation().x - 1][piece.getCurrentLocation().y - 1]) {
-                return true;
-            }
-        }
-        return getMoves(pieces)[newX][newY];
+        return getMoves(currentLocation, pieces)[newX - 1][newY - 1];
     }
 
-    public boolean freeToMove(int newX, int newY, ArrayList<Piece> pieces) {
+    public boolean freeToMoveTo(int newX, int newY, ArrayList<Piece> pieces) {
+        if (Functions.isOutside(newX, newY))
+            return false;
         for (Piece piece : pieces) {
-            if (piece.getColor().equals(this.getColor())) {
-                if (piece.getCurrentLocation().equals(new Point(newX, newY))) {
-                    return false;
-                }
-            }
+            if (piece.getCurrentLocation().equals(new Point(newX, newY))
+                    && piece.getColor().equals(getColor()))
+                return false;
         }
         return true;
     }
 
-    public void handleHits(int newX, int newY, ArrayList<Piece> pieces) {
+    public void move(int newX, int newY, ArrayList<Piece> pieces) {
+        // handle hits
         for (int i = 0; i < pieces.size(); i++) {
             if (!pieces.get(i).getColor().equals(this.getColor())) {
                 if (pieces.get(i).getCurrentLocation().equals(new Point(newX, newY))) {
-                    if (pieces.get(i).getType().equals(utils.Piece.KING)) {
+                    if (pieces.get(i).getType().equals(PieceType.KING)) {
                         System.out.println("The king of alliance " + pieces.get(i).getColor() + " has fallen!");
                     }
                     pieces.get(i).removeFrom(pieces);
                 }
             }
         }
+        // move
+        this.setCurrentLocation(newX, newY);
+        this.setVisible(false);
     }
 
-    public abstract boolean[][] addHittingMovesTo(Point newLocation, boolean[][] moves);
+    public boolean[][] addMovesTo(boolean[][] moves, Point from, ArrayList<Piece> pieces) {
+        boolean[][] possibleMoves = getMoves(from, pieces);
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (possibleMoves[j][i])
+                    moves[i][j] = true;
+            }
+        }
+        return moves;
+    }
 
-    public abstract boolean[][] getHittingMovesFrom(Point fromLocation);
-
-    public boolean causesChessToSelectedTeam(Point newLocation, ArrayList<Piece> pieces, PieceColor color) {
+    public boolean selectedTeamIsInChess(Point from, ArrayList<Piece> pieces, PieceColor color) {
         boolean[][] dangerZone = new boolean[8][8];
 
         for (Piece piece : pieces) {
             if (!piece.getColor().equals(color))
-                dangerZone = piece.addHittingMovesTo(newLocation, dangerZone);
+                dangerZone = piece.addMovesTo(dangerZone, from, pieces);
         }
 
-        Piece king = getKing(pieces);
+        Piece king = getKing(pieces, color);
 
         if (king == null) return true;
 
-        if (dangerZone[king.getCurrentLocation().x - 1][king.getCurrentLocation().y - 1]) {
+        if (dangerZone[king.getCurrentLocation().y - 1][king.getCurrentLocation().x - 1]) {
             System.out.println("Your king is in danger");
             return true;
         } else return false;
     }
 
-    public boolean possibleToStopChess(Point newLocation, ArrayList<Piece> pieces) {
-        boolean[][] dangerZone = new boolean[8][8];
-
+    private Piece getKing(ArrayList<Piece> pieces, PieceColor color) {
         for (Piece piece : pieces) {
-            if (!piece.getColor().equals(this.color)) {
-                if (newLocation.equals(piece.getCurrentLocation()))
-                    dangerZone = piece.addHittingMovesTo(newLocation, dangerZone);
-            }
-        }
-
-        Piece king = getKing(pieces);
-
-        if (king == null) return false;
-
-        if (dangerZone[king.getCurrentLocation().x - 1][king.getCurrentLocation().y - 1]) {
-            System.out.println("Your king is still in danger");
-            return false;
-        } else return true;
-
-    }
-
-    private Piece getKing(ArrayList<Piece> pieces) {
-        for (Piece piece : pieces) {
-            if (piece.getType() == utils.Piece.KING && piece.getColor() == this.getColor()) {
+            if (piece.getType() == PieceType.KING && piece.getColor() == color) {
                 return piece;
             }
         }
@@ -172,5 +158,5 @@ public abstract class Piece extends JLabel implements Serializable {
         }
     }
 
-    public abstract utils.Piece getType();
+    public abstract PieceType getType();
 }
