@@ -51,7 +51,9 @@ public abstract class Piece extends JLabel implements Serializable {
     public abstract boolean[][] getMoves(Point from);
 
     public boolean canMoveTo(int newX, int newY) {
-        return getMoves(currentLocation)[newX - 1][newY - 1];
+        if (Functions.isOutside(newX, newY))
+            return false;
+        return getMoves(getCurrentLocation())[newX - 1][newY - 1];
     }
 
     public boolean isFreeFromColorAndValid(int newX, int newY, PieceColor color) {

@@ -140,15 +140,25 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
                 component = chessBoard.findComponentAt(e.getX(), e.getY());
                 whiteTurn = !whiteTurn;
             } else {
-                component = cannotMove();
+                chessPiece.setVisible(false);
+                chessPiece.setLocation(chessPiece.getLastLocation());
+                component = chessBoard.findComponentAt(chessPiece.getLocation());
             }
         } else {
-            component = cannotMove();
+            chessPiece.setVisible(false);
+            chessPiece.setLocation(chessPiece.getLastLocation());
+            component = chessBoard.findComponentAt(chessPiece.getLocation());
         }
         Container parent = (Container) component;
         parent.add(chessPiece);
         chessPiece.setVisible(true);
         checkChess(chessPiece.getCurrentLocation().x, chessPiece.getCurrentLocation().y);
+    }
+
+    public void cannotMove(Component component) {
+        chessPiece.setVisible(false);
+        chessPiece.setLocation(chessPiece.getLastLocation());
+        component = chessBoard.findComponentAt(chessPiece.getLocation());
     }
 
     private boolean isYourTurn() {
@@ -192,12 +202,6 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     private boolean wasNotInChess() {
         return (chessPiece.getColor() == PieceColor.WHITE && !whiteChess)
                 || (chessPiece.getColor() == PieceColor.BLACK && !blackChess);
-    }
-
-    public Component cannotMove() {
-        chessPiece.setVisible(false);
-        chessPiece.setLocation(chessPiece.getLastLocation());
-        return chessBoard.findComponentAt(chessPiece.getLocation());
     }
 
     public void mouseClicked(MouseEvent e) {

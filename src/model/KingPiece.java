@@ -31,7 +31,7 @@ public class KingPiece extends Piece {
     private void checkMoves(Point from, boolean[][] moves, int relX, int relY) {
         int newX = from.x + relX;
         int newY = from.y + relY;
-        if (this.isFreeFromColorAndValid(newX, newY, this.getColor())) moves[newX - 1][newY - 1] = true;
+        if (this.isFreeFromColorAndValid(newX, newY, this.getColor()) && !Functions.isOutside(newX, newY)) moves[newX - 1][newY - 1] = true;
     }
 
     @Override
