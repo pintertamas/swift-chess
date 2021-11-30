@@ -1,3 +1,5 @@
+import controller.ChessBoard;
+
 import javax.swing.*;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 

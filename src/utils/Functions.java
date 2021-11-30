@@ -31,7 +31,9 @@ public class Functions {
     }
 
     public static boolean isOutside(int newX, int newY) {
-        return newX > 8 || newX <= 0 || newY > 8 || newY <= 0;
+        boolean isOutside = newX > 8 || newX <= 0 || newY > 8 || newY <= 0;
+        System.out.println(isOutside);
+        return isOutside;
     }
 
     public static boolean isOutside(int newX) {

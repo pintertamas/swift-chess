@@ -1,5 +1,6 @@
 package model;
 
+import controller.ChessBoard;
 import utils.Functions;
 import utils.PieceColor;
 import utils.PieceType;
@@ -16,13 +17,15 @@ public abstract class Piece extends JLabel implements Serializable {
     protected Point lastLocation;
     protected Point currentLocation;
     protected boolean[][] moves;
+    protected ChessBoard board;
 
-    public Piece(PieceColor color, int location) {
+    public Piece(PieceColor color, int location, ChessBoard board) {
         // it centers the image
         super(Functions.getImage("blank.png"));
         this.color = color;
         this.boardLocation = location;
         moves = new boolean[8][8];
+        this.board = board;
     }
 
     public int getBoardLocation() {
@@ -45,16 +48,16 @@ public abstract class Piece extends JLabel implements Serializable {
         return color == PieceColor.WHITE ? getWhiteImage() : getBlackImage();
     }
 
-    public abstract boolean[][] getMoves(Point from, ArrayList<Piece> pieces);
+    public abstract boolean[][] getMoves(Point from);
 
-    public boolean canMoveTo(int newX, int newY, ArrayList<Piece> pieces) {
-        return getMoves(currentLocation, pieces)[newX - 1][newY - 1];
+    public boolean canMoveTo(int newX, int newY) {
+        return getMoves(currentLocation)[newX - 1][newY - 1];
     }
 
-    public boolean freeToMoveTo(int newX, int newY, ArrayList<Piece> pieces) {
+    public boolean freeToMoveTo(int newX, int newY) {
         if (Functions.isOutside(newX, newY))
             return false;
-        for (Piece piece : pieces) {
+        for (Piece piece : getBoard().getPieces()) {
             if (piece.getCurrentLocation().equals(new Point(newX, newY))
                     && piece.getColor().equals(getColor()))
                 return false;
@@ -79,8 +82,8 @@ public abstract class Piece extends JLabel implements Serializable {
         this.setVisible(false);
     }
 
-    public boolean[][] addMovesTo(boolean[][] moves, Point from, ArrayList<Piece> pieces) {
-        boolean[][] possibleMoves = getMoves(from, pieces);
+    public boolean[][] addMovesTo(boolean[][] moves, Point from) {
+        boolean[][] possibleMoves = getMoves(from);
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (possibleMoves[j][i])
@@ -90,15 +93,15 @@ public abstract class Piece extends JLabel implements Serializable {
         return moves;
     }
 
-    public boolean selectedTeamIsInChess(Point from, ArrayList<Piece> pieces, PieceColor color) {
+    public boolean selectedTeamIsInChess(Point from, PieceColor color) {
         boolean[][] dangerZone = new boolean[8][8];
 
-        for (Piece piece : pieces) {
+        for (Piece piece : getBoard().getPieces()) {
             if (!piece.getColor().equals(color))
-                dangerZone = piece.addMovesTo(dangerZone, from, pieces);
+                dangerZone = piece.addMovesTo(dangerZone, from);
         }
 
-        Piece king = getKing(pieces, color);
+        Piece king = getKing(color);
 
         if (king == null) return true;
 
@@ -108,8 +111,8 @@ public abstract class Piece extends JLabel implements Serializable {
         } else return false;
     }
 
-    private Piece getKing(ArrayList<Piece> pieces, PieceColor color) {
-        for (Piece piece : pieces) {
+    private Piece getKing(PieceColor color) {
+        for (Piece piece : getBoard().getPieces()) {
             if (piece.getType() == PieceType.KING && piece.getColor() == color) {
                 return piece;
             }
@@ -159,4 +162,8 @@ public abstract class Piece extends JLabel implements Serializable {
     }
 
     public abstract PieceType getType();
+
+    public ChessBoard getBoard() {
+        return board;
+    }
 }

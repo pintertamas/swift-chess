@@ -1,5 +1,6 @@
 package model;
 
+import controller.ChessBoard;
 import utils.PieceColor;
 import utils.Functions;
 import utils.PieceType;
@@ -11,20 +12,20 @@ import java.util.ArrayList;
 public class PawnPiece extends Piece {
     boolean firstMove;
 
-    public PawnPiece(PieceColor color, int location) {
-        super(color, location);
+    public PawnPiece(PieceColor color, int location, ChessBoard board) {
+        super(color, location, board);
         this.firstMove = true;
     }
 
     @Override
-    public boolean[][] getMoves(Point from, ArrayList<Piece> pieces) {
+    public boolean[][] getMoves(Point from) {
         boolean[][] movingPoints = new boolean[8][8];
         int direction = getColor() == PieceColor.WHITE ? 1 : -1;
         int newYDoubleStep = from.y - 2 * direction;
         int newYSingleStep = from.y - direction;
         boolean isBlocked = false;
         if (newYSingleStep <= 8 && newYSingleStep > 0) {
-            for (Piece piece : pieces) {
+            for (Piece piece : getBoard().getPieces()) {
                 if (piece.getCurrentLocation().equals(new Point(from.x, newYSingleStep))) {
                     isBlocked = true;
                     break;
@@ -33,7 +34,7 @@ public class PawnPiece extends Piece {
             movingPoints[from.x - 1][newYSingleStep - 1] = !isBlocked;
         }
         if (firstMove && newYDoubleStep <= 8 && newYDoubleStep > 0) {
-            for (Piece piece : pieces) {
+            for (Piece piece : getBoard().getPieces()) {
                 if (piece.getCurrentLocation().equals(new Point(from.x, newYDoubleStep))) {
                     isBlocked = true;
                     break;
@@ -42,24 +43,17 @@ public class PawnPiece extends Piece {
             movingPoints[from.x - 1][newYDoubleStep - 1] = !isBlocked;
         }
         int newX = from.x - 1;
-        handleHittingMoves(pieces, movingPoints, newYSingleStep, newX);
+        handleObliqueMoves(movingPoints, newYSingleStep, newX);
         newX = from.x + 1;
-        handleHittingMoves(pieces, movingPoints, newYSingleStep, newX);
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                System.out.print(movingPoints[j][i] ? "1 " : "0 ");
-            }
-            System.out.println();
-        }
+        handleObliqueMoves(movingPoints, newYSingleStep, newX);
 
         return movingPoints;
     }
 
     @Override
-    public boolean[][] addMovesTo(boolean[][] moves, Point from, ArrayList<Piece> pieces) {
-        boolean[][] hittingMoves = super.addMovesTo(moves, from, pieces);
-        System.out.println();
+    public boolean[][] addMovesTo(boolean[][] moves, Point from) {
+        boolean[][] hittingMoves = super.addMovesTo(moves, from);
+        //System.out.println();
         int direction = getColor() == PieceColor.WHITE ? 1 : -1;
 
         if (!Functions.isOutside(from.y - direction))
@@ -72,14 +66,14 @@ public class PawnPiece extends Piece {
         return hittingMoves;
     }
 
-    private void handleHittingMoves(ArrayList<Piece> pieces, boolean[][] movingPoints, int newYSingleStep, int newX) {
+    private void handleObliqueMoves(boolean[][] movingPoints, int newYSingleStep, int newX) {
         if (!Functions.isOutside(newX, newYSingleStep)) {
-            //for (Piece piece : pieces) {
-                //if (piece.getCurrentLocation().equals(new Point(newX, newYSingleStep)) && piece.getColor() != getColor() || true) {
+            for (Piece piece : getBoard().getPieces()) {
+                if (piece.getCurrentLocation().equals(new Point(newX, newYSingleStep)) && piece.getColor() != getColor()) {
                     movingPoints[newX - 1][newYSingleStep - 1] = true;
-                    //break;
-                //}
-            //}
+                    break;
+                }
+            }
         }
     }
 

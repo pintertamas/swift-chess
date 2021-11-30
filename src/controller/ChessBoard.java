@@ -1,13 +1,12 @@
-import model.KingPiece;
-import model.PawnPiece;
+package controller;
+
+import model.*;
 
 import java.awt.*;
 import java.awt.Color;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-import model.Piece;
-import model.QueenPiece;
 import utils.*;
 
 import javax.swing.*;
@@ -53,40 +52,49 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         JPanel panel = (JPanel) chessBoard.getComponent(0);
         addWhitePieces();
         addBlackPieces();
-        drawPieces(panel, pieces);
+        drawPieces();
     }
 
     private void addWhitePieces() {
-        addPawns(pieces, PieceColor.WHITE, 48);
-        addRoyalFamily(pieces, PieceColor.WHITE, 60, 59);
+        addPawns(PieceColor.WHITE, 48);
+        addRoyalFamily(PieceColor.WHITE, 59, 60);
+        addBishops(PieceColor.WHITE, 58, 61);
     }
 
     private void addBlackPieces() {
-        addPawns(pieces, PieceColor.BLACK, 8);
-        addRoyalFamily(pieces, PieceColor.BLACK, 3, 4);
+        addPawns(PieceColor.BLACK, 8);
+        addRoyalFamily(PieceColor.BLACK, 3, 4);
+        addBishops(PieceColor.BLACK, 2, 5);
     }
 
 
-    private void drawPieces(JPanel panel, ArrayList<Piece> pieces) {
+    private void drawPieces() {
         for (Piece piece : pieces) {
-            panel = (JPanel) chessBoard.getComponent(piece.getBoardLocation());
+            JPanel panel = (JPanel) chessBoard.getComponent(piece.getBoardLocation());
             panel.add(piece);
         }
     }
 
-    private void addPawns(ArrayList<Piece> pieces, PieceColor color, int from) {
+    private void addPawns(PieceColor color, int from) {
         Piece piece;
         for (int i = from; i < from + 8; i++) {
-            piece = new PawnPiece(color, i);
+            piece = new PawnPiece(color, i, this);
             piece.init(pieces);
         }
     }
 
-    private void addRoyalFamily(ArrayList<Piece> pieces, PieceColor color, int kingLocation, int queenLocation) {
-        Piece king = new KingPiece(color, kingLocation);
-        Piece queen = new QueenPiece(color, queenLocation);
+    private void addRoyalFamily(PieceColor color, int kingLocation, int queenLocation) {
+        Piece king = new KingPiece(color, kingLocation, this);
+        Piece queen = new QueenPiece(color, queenLocation, this);
         king.init(pieces);
         queen.init(pieces);
+    }
+
+    private void addBishops(PieceColor color, int firstBishopLocation, int secondBishopLocation) {
+        Piece firstBishop = new BishopPiece(color, firstBishopLocation, this);
+        Piece secondBishop = new BishopPiece(color, secondBishopLocation, this);
+        firstBishop.init(pieces);
+        secondBishop.init(pieces);
     }
 
     public void mousePressed(MouseEvent e) {
@@ -117,14 +125,16 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         int newY = Functions.getLocationOnY(e.getY(), chessBoard.getSize().height);
         Component component;
 
-        if ((isYourTurn() && chessPiece.canMoveTo(newX, newY, pieces))) {
-            System.out.println(chessPiece.getType());
-            if ((wasNotInChess() && (!chessPiece.selectedTeamIsInChess(new Point(newX, newY), pieces, chessPiece.getColor())))) {
+        if ((isYourTurn() && chessPiece.canMoveTo(newX, newY))) {
+            PieceColor enemyColor = chessPiece.getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+            if ((wasNotInChess() &&
+                    (!chessPiece.selectedTeamIsInChess(new Point(newX, newY), chessPiece.getColor())
+                            || (!chessPiece.selectedTeamIsInChess(new Point(newX, newY), enemyColor))))) {
                 checkChess(newX, newY);
                 chessPiece.move(newX, newY, pieces);
                 component = chessBoard.findComponentAt(e.getX(), e.getY());
                 whiteTurn = !whiteTurn;
-            } else if (!wasNotInChess() && chessPiece.selectedTeamIsInChess(new Point(newX, newY), pieces, chessPiece.getColor())) {
+            } else if (!wasNotInChess() && chessPiece.selectedTeamIsInChess(new Point(newX, newY), chessPiece.getColor())) {
                 revokeChess();
                 chessPiece.move(newX, newY, pieces);
                 component = chessBoard.findComponentAt(e.getX(), e.getY());
@@ -147,7 +157,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
 
     private void checkChess(int newX, int newY) {
         PieceColor enemyColor = chessPiece.getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-        if (chessPiece.selectedTeamIsInChess(new Point(newX, newY), pieces, enemyColor)) {
+        if (chessPiece.selectedTeamIsInChess(new Point(newX, newY), enemyColor)) {
             if (enemyColor == PieceColor.WHITE) {
                 whiteChess = true;
                 System.out.println("Black says: CHESS!");
@@ -185,7 +195,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
             if (chessPiece.getType() == PieceType.PAWN
                     && (chessPiece.getCurrentLocation().y == 1
                     || chessPiece.getCurrentLocation().y == 8)) {
-                Piece queen = new QueenPiece(chessPiece.getColor(), 0);
+                Piece queen = new QueenPiece(chessPiece.getColor(), 0, this);
                 queen.setCurrentLocation(chessPiece.getLastLocation());
                 queen.setSize(chessPiece.getWidth(), chessPiece.getHeight());
                 queen.setIcon(queen.getImage());
@@ -203,5 +213,9 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     }
 
     public void mouseExited(MouseEvent e) {
+    }
+
+    public ArrayList<Piece> getPieces() {
+        return pieces;
     }
 }
