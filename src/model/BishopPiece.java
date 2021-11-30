@@ -7,7 +7,6 @@ import utils.PieceType;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class BishopPiece extends Piece {
     public BishopPiece(PieceColor color, int location, ChessBoard board) {
@@ -17,56 +16,36 @@ public class BishopPiece extends Piece {
     @Override
     public boolean[][] getMoves(Point from) {
         boolean[][] movingPoints = new boolean[8][8];
-        int offset = 0;
-        while (true) {
-            int newX = from.x - offset;
-            int newY = from.y - offset;
-            if (this.freeToMoveTo(newX, newY)) {
-                movingPoints[newX - 1][newY - 1] = true;
-                System.out.println("newX: " + newX + " newY: " + newY);
-                offset++;
-            } else {
-                break;
-            }
-        }
-        offset = 0;
-        while (true) {
-            int newX = from.x + offset;
-            int newY = from.y - offset;
-            if (this.freeToMoveTo(newX, newY)) {
-                movingPoints[newX - 1][newY - 1] = true;
-                System.out.println("newX: " + newX + " newY: " + newY);
-                offset++;
-            } else {
-                break;
-            }
-        }
-        offset = 0;
-        while (true) {
-            int newX = from.x - offset;
-            int newY = from.y + offset;
-            if (this.freeToMoveTo(newX, newY)) {
-                movingPoints[newX - 1][newY - 1] = true;
-                System.out.println("newX: " + newX + " newY: " + newY);
-                offset++;
-            } else {
-                break;
-            }
-        }
-        offset = 0;
-        while (true) {
-            int newX = from.x + offset;
-            int newY = from.y + offset;
-            if (this.freeToMoveTo(newX, newY)) {
-                movingPoints[newX - 1][newY - 1] = true;
-                System.out.println("newX: " + newX + " newY: " + newY);
-                offset++;
-            } else {
-                break;
-            }
-        }
+        checkDiagonalMoves(from, movingPoints, 1, 1);
+        checkDiagonalMoves(from, movingPoints, -1, 1);
+        checkDiagonalMoves(from, movingPoints, 1, -1);
+        checkDiagonalMoves(from, movingPoints, -1, -1);
+
+        //getBoard().printBoard(movingPoints);
 
         return movingPoints;
+    }
+
+    private void checkDiagonalMoves(Point from, boolean[][] moves, int relX, int relY) {
+        int offset = 0;
+        while (true) {
+            // relX&relY from {-1;+1}
+            int newX = from.x + offset * relX;
+            int newY = from.y + offset * relY;
+            PieceColor enemyColor = this.getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+            if (!this.isFreeFromColorAndValid(newX, newY, enemyColor) && !Functions.isOutside(newX, newY)) {
+                System.out.println(newX + " " + newY);
+                moves[newX - 1][newY - 1] = true;
+                return;
+            }
+            if (this.isFreeFromColorAndValid(newX, newY, getColor())) {
+                System.out.println(newX + " " + newY);
+                moves[newX - 1][newY - 1] = true;
+                offset++;
+            } else {
+                return;
+            }
+        }
     }
 
     @Override

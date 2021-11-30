@@ -62,7 +62,6 @@ public class PawnPiece extends Piece {
         if (!Functions.isOutside(from.y - 2 * direction))
             hittingMoves[from.y - 2 * direction - 1][from.x - 1] = false;
 
-
         return hittingMoves;
     }
 
@@ -78,8 +77,8 @@ public class PawnPiece extends Piece {
     }
 
     @Override
-    public void move(int newX, int newY, ArrayList<Piece> pieces) {
-        super.move(newX, newY, pieces);
+    public void placementUpdate(int newX, int newY, ArrayList<Piece> pieces) {
+        super.placementUpdate(newX, newY, pieces);
         this.firstMove = false;
     }
 

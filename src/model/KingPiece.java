@@ -7,7 +7,6 @@ import utils.PieceType;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class KingPiece extends Piece {
     public KingPiece(PieceColor color, int location, ChessBoard board) {
@@ -17,15 +16,22 @@ public class KingPiece extends Piece {
     @Override
     public boolean[][] getMoves(Point from) {
         boolean[][] movingPoints = new boolean[8][8];
-        if (this.freeToMoveTo(from.x - 1, from.y)) movingPoints[from.x - 1 - 1][from.y - 1] = true;
-        if (this.freeToMoveTo(from.x - 1, from.y - 1)) movingPoints[from.x - 1 - 1][from.y - 1 - 1] = true;
-        if (this.freeToMoveTo(from.x - 1, from.y + 1)) movingPoints[from.x - 1 - 1][from.y + 1 - 1] = true;
-        if (this.freeToMoveTo(from.x, from.y - 1)) movingPoints[from.x - 1][from.y - 1 - 1] = true;
-        if (this.freeToMoveTo(from.x, from.y + 1)) movingPoints[from.x - 1][from.y + 1 - 1] = true;
-        if (this.freeToMoveTo(from.x + 1, from.y)) movingPoints[from.x + 1 - 1][from.y - 1] = true;
-        if (this.freeToMoveTo(from.x + 1, from.y - 1)) movingPoints[from.x + 1 - 1][from.y - 1 - 1] = true;
-        if (this.freeToMoveTo(from.x + 1, from.y + 1)) movingPoints[from.x + 1 - 1][from.y + 1 - 1] = true;
+        checkMoves(from, movingPoints, 1, 1);
+        checkMoves(from, movingPoints, 1, 0);
+        checkMoves(from, movingPoints, 1, -1);
+        checkMoves(from, movingPoints, 0, 1);
+        checkMoves(from, movingPoints, 0, -1);
+        checkMoves(from, movingPoints, -1, 1);
+        checkMoves(from, movingPoints, -1, 0);
+        checkMoves(from, movingPoints, -1, -1);
+
         return movingPoints;
+    }
+
+    private void checkMoves(Point from, boolean[][] moves, int relX, int relY) {
+        int newX = from.x + relX;
+        int newY = from.y + relY;
+        if (this.isFreeFromColorAndValid(newX, newY, this.getColor())) moves[newX - 1][newY - 1] = true;
     }
 
     @Override

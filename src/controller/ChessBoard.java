@@ -131,12 +131,12 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
                     (!chessPiece.selectedTeamIsInChess(new Point(newX, newY), chessPiece.getColor())
                             || (!chessPiece.selectedTeamIsInChess(new Point(newX, newY), enemyColor))))) {
                 checkChess(newX, newY);
-                chessPiece.move(newX, newY, pieces);
+                chessPiece.placementUpdate(newX, newY, pieces);
                 component = chessBoard.findComponentAt(e.getX(), e.getY());
                 whiteTurn = !whiteTurn;
             } else if (!wasNotInChess() && chessPiece.selectedTeamIsInChess(new Point(newX, newY), chessPiece.getColor())) {
                 revokeChess();
-                chessPiece.move(newX, newY, pieces);
+                chessPiece.placementUpdate(newX, newY, pieces);
                 component = chessBoard.findComponentAt(e.getX(), e.getY());
                 whiteTurn = !whiteTurn;
             } else {
@@ -165,6 +165,16 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
                 blackChess = true;
                 System.out.println("White says: CHESS!");
             }
+        }
+    }
+
+    public void printBoard(boolean[][] array) {
+        System.out.println();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                System.out.print(array[j][i] ? "1 " : "0 ");
+            }
+            System.out.println();
         }
     }
 

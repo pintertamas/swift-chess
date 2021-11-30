@@ -54,18 +54,18 @@ public abstract class Piece extends JLabel implements Serializable {
         return getMoves(currentLocation)[newX - 1][newY - 1];
     }
 
-    public boolean freeToMoveTo(int newX, int newY) {
+    public boolean isFreeFromColorAndValid(int newX, int newY, PieceColor color) {
         if (Functions.isOutside(newX, newY))
             return false;
         for (Piece piece : getBoard().getPieces()) {
             if (piece.getCurrentLocation().equals(new Point(newX, newY))
-                    && piece.getColor().equals(getColor()))
+                    && piece.getColor().equals(color))
                 return false;
         }
         return true;
     }
 
-    public void move(int newX, int newY, ArrayList<Piece> pieces) {
+    public void placementUpdate(int newX, int newY, ArrayList<Piece> pieces) {
         // handle hits
         for (int i = 0; i < pieces.size(); i++) {
             if (!pieces.get(i).getColor().equals(this.getColor())) {
