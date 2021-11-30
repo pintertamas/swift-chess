@@ -15,8 +15,19 @@ public class QueenPiece extends Piece {
     }
 
     @Override
-    public boolean[][] getMoves(Point from) {
-        return new boolean[8][8];
+    public boolean[][] getMoves(Point from, Point exclude) {
+        boolean[][] movingPoints = new boolean[8][8];
+
+        checkDiagonalMoves(from, exclude, movingPoints, 1, 1);
+        checkDiagonalMoves(from, exclude, movingPoints, -1, 1);
+        checkDiagonalMoves(from, exclude, movingPoints, 1, -1);
+        checkDiagonalMoves(from, exclude, movingPoints, -1, -1);
+        checkDiagonalMoves(from, exclude, movingPoints, 0, 1);
+        checkDiagonalMoves(from, exclude, movingPoints, 0, -1);
+        checkDiagonalMoves(from, exclude, movingPoints, 1, 0);
+        checkDiagonalMoves(from, exclude, movingPoints, -1, 0);
+
+        return movingPoints;
     }
 
     @Override

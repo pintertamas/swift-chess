@@ -18,7 +18,7 @@ public class PawnPiece extends Piece {
     }
 
     @Override
-    public boolean[][] getMoves(Point from) {
+    public boolean[][] getMoves(Point from, Point exclude) {
         boolean[][] movingPoints = new boolean[8][8];
         int direction = getColor() == PieceColor.WHITE ? 1 : -1;
         int newYDoubleStep = from.y - 2 * direction;
@@ -51,16 +51,16 @@ public class PawnPiece extends Piece {
     }
 
     @Override
-    public boolean[][] addMovesTo(boolean[][] moves, Point from) {
-        boolean[][] hittingMoves = super.addMovesTo(moves, from);
+    public boolean[][] addMovesTo(Point exclude, boolean[][] moves) {
+        boolean[][] hittingMoves = super.addMovesTo(exclude, moves);
         //System.out.println();
         int direction = getColor() == PieceColor.WHITE ? 1 : -1;
 
-        if (!Functions.isOutside(from.y - direction))
-            hittingMoves[from.y - direction - 1][from.x - 1] = false;
+        if (!Functions.isOutside(getCurrentLocation().y - direction))
+            hittingMoves[getCurrentLocation().y - direction - 1][getCurrentLocation().x - 1] = false;
 
-        if (!Functions.isOutside(from.y - 2 * direction))
-            hittingMoves[from.y - 2 * direction - 1][from.x - 1] = false;
+        if (!Functions.isOutside(getCurrentLocation().y - 2 * direction))
+            hittingMoves[getCurrentLocation().y - 2 * direction - 1][getCurrentLocation().x - 1] = false;
 
         return hittingMoves;
     }

@@ -14,24 +14,24 @@ public class KingPiece extends Piece {
     }
 
     @Override
-    public boolean[][] getMoves(Point from) {
+    public boolean[][] getMoves(Point from, Point exclude) {
         boolean[][] movingPoints = new boolean[8][8];
-        checkMoves(from, movingPoints, 1, 1);
-        checkMoves(from, movingPoints, 1, 0);
-        checkMoves(from, movingPoints, 1, -1);
-        checkMoves(from, movingPoints, 0, 1);
-        checkMoves(from, movingPoints, 0, -1);
-        checkMoves(from, movingPoints, -1, 1);
-        checkMoves(from, movingPoints, -1, 0);
-        checkMoves(from, movingPoints, -1, -1);
+        checkMoves(from, exclude, movingPoints, 1, 1);
+        checkMoves(from, exclude, movingPoints, 1, 0);
+        checkMoves(from, exclude, movingPoints, 1, -1);
+        checkMoves(from, exclude, movingPoints, 0, 1);
+        checkMoves(from, exclude, movingPoints, 0, -1);
+        checkMoves(from, exclude, movingPoints, -1, 1);
+        checkMoves(from, exclude, movingPoints, -1, 0);
+        checkMoves(from, exclude, movingPoints, -1, -1);
 
         return movingPoints;
     }
 
-    private void checkMoves(Point from, boolean[][] moves, int relX, int relY) {
+    private void checkMoves(Point from, Point exclude, boolean[][] moves, int relX, int relY) {
         int newX = from.x + relX;
         int newY = from.y + relY;
-        if (this.isFreeFromColorAndValid(newX, newY, this.getColor()) && !Functions.isOutside(newX, newY)) moves[newX - 1][newY - 1] = true;
+        if (this.isFreeFromColorAndValid(newX, newY, this.getColor(), exclude) && !Functions.isOutside(newX, newY)) moves[newX - 1][newY - 1] = true;
     }
 
     @Override

@@ -31,7 +31,7 @@ public class Functions {
     }
 
     public static boolean isOutside(int newX, int newY) {
-        return newX > 8 || newX <= 0 || newY > 8 || newY <= 0;
+        return isOutside(new Point(newX, newY));
     }
 
     public static boolean isOutside(int newX) {

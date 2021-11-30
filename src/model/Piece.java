@@ -48,23 +48,45 @@ public abstract class Piece extends JLabel implements Serializable {
         return color == PieceColor.WHITE ? getWhiteImage() : getBlackImage();
     }
 
-    public abstract boolean[][] getMoves(Point from);
+    public abstract boolean[][] getMoves(Point from, Point exclude);
 
-    public boolean canMoveTo(int newX, int newY) {
+    public boolean canMoveTo(int newX, int newY, Point exclude) {
         if (Functions.isOutside(newX, newY))
             return false;
-        return getMoves(getCurrentLocation())[newX - 1][newY - 1];
+        return getMoves(getCurrentLocation(), exclude)[newX - 1][newY - 1];
     }
 
-    public boolean isFreeFromColorAndValid(int newX, int newY, PieceColor color) {
+    public boolean isFreeFromColorAndValid(int newX, int newY, PieceColor color, Point exclude) {
         if (Functions.isOutside(newX, newY))
             return false;
         for (Piece piece : getBoard().getPieces()) {
-            if (piece.getCurrentLocation().equals(new Point(newX, newY))
+            if (new Point(newX, newY).equals(exclude))
+                return true;
+            if ((piece.getCurrentLocation().equals(new Point(newX, newY)))
                     && piece.getColor().equals(color))
                 return false;
         }
         return true;
+    }
+
+    public void checkDiagonalMoves(Point exclude, Point from, boolean[][] moves, int relX, int relY) {
+        int offset = 1;
+        while (true) {
+            // relX&relY from {-1;+1}
+            int newX = from.x + offset * relX;
+            int newY = from.y + offset * relY;
+            PieceColor enemyColor = this.getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+            if (!this.isFreeFromColorAndValid(newX, newY, enemyColor, exclude) && !Functions.isOutside(newX, newY)) {
+                moves[newX - 1][newY - 1] = true;
+                return;
+            }
+            if (this.isFreeFromColorAndValid(newX, newY, getColor(), exclude)) {
+                moves[newX - 1][newY - 1] = true;
+                offset++;
+            } else {
+                return;
+            }
+        }
     }
 
     public void placementUpdate(int newX, int newY, ArrayList<Piece> pieces) {
@@ -84,23 +106,24 @@ public abstract class Piece extends JLabel implements Serializable {
         this.setVisible(false);
     }
 
-    public boolean[][] addMovesTo(boolean[][] moves, Point from) {
-        boolean[][] possibleMoves = getMoves(from);
+    public boolean[][] addMovesTo(Point exclude, boolean[][] moves) {
+        boolean[][] possibleMoves = getMoves(getCurrentLocation(), exclude);
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (possibleMoves[j][i])
-                    moves[i][j] = true;
+                if (possibleMoves[i][j]) {
+                    moves[j][i] = true;
+                }
             }
         }
         return moves;
     }
 
-    public boolean selectedTeamIsInChess(Point from, PieceColor color) {
+    public boolean selectedTeamIsInChess(Point exclude, PieceColor color) {
         boolean[][] dangerZone = new boolean[8][8];
 
         for (Piece piece : getBoard().getPieces()) {
             if (!piece.getColor().equals(color))
-                dangerZone = piece.addMovesTo(dangerZone, from);
+                dangerZone = piece.addMovesTo(exclude, dangerZone);
         }
 
         Piece king = getKing(color);
@@ -154,12 +177,9 @@ public abstract class Piece extends JLabel implements Serializable {
 
     public void removeFrom(ArrayList<Piece> pieces) {
         if (pieces.contains(this)) {
-            System.out.println("Piece removed: " + this);
             pieces.remove(this);
             this.setVisible(false);
             this.getParent().remove(this);
-        } else {
-            System.out.println("This piece is not contained by the given list");
         }
     }
 
