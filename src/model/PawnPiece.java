@@ -18,8 +18,9 @@ public class PawnPiece extends Piece {
     }
 
     @Override
-    public boolean[][] getMoves(Point from, Point exclude) {
+    public boolean[][] getMoves(Point include, Point exclude) {
         boolean[][] movingPoints = new boolean[8][8];
+        Point from = getCurrentLocation();
         int direction = getColor() == PieceColor.WHITE ? 1 : -1;
         int newYDoubleStep = from.y - 2 * direction;
         int newYSingleStep = from.y - direction;
@@ -51,8 +52,8 @@ public class PawnPiece extends Piece {
     }
 
     @Override
-    public boolean[][] addMovesTo(Point exclude, boolean[][] moves) {
-        boolean[][] hittingMoves = super.addMovesTo(exclude, moves);
+    public boolean[][] addMovesTo(Point include, Point exclude, boolean[][] moves) {
+        boolean[][] hittingMoves = super.addMovesTo(include, exclude, moves);
         //System.out.println();
         int direction = getColor() == PieceColor.WHITE ? 1 : -1;
 

@@ -4,13 +4,14 @@ import model.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import utils.*;
 
 import javax.swing.*;
 
-public class ChessBoard extends JFrame implements MouseListener, MouseMotionListener {
+public class ChessBoard extends JFrame implements MouseListener, MouseMotionListener, Serializable {
     final JLayeredPane layeredPane;
     JPanel chessBoard;
     Piece chessPiece;
@@ -20,8 +21,10 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     boolean whiteTurn;
     boolean whiteChess;
     boolean blackChess;
+    boolean againstRobot;
 
-    public ChessBoard() {
+    public ChessBoard(boolean againstRobot) {
+        this.againstRobot = againstRobot;
         whiteTurn = true;
         Dimension boardSize = new Dimension(640, 640);
         layeredPane = new JLayeredPane();
@@ -56,15 +59,15 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     private void addWhitePieces() {
         addPawns(PieceColor.WHITE, 48);
         addRoyalFamily(PieceColor.WHITE, 59, 60);
-        addBishops(PieceColor.WHITE, 58, 61);
+        //addBishops(PieceColor.WHITE, 58, 61);
         addKnights(PieceColor.WHITE, 57, 62);
         addRooks(PieceColor.WHITE, 56, 63);
     }
 
     private void addBlackPieces() {
-        addPawns(PieceColor.BLACK, 8);
+        //addPawns(PieceColor.BLACK, 8);
         addRoyalFamily(PieceColor.BLACK, 3, 4);
-        addBishops(PieceColor.BLACK, 2, 5);
+        //addBishops(PieceColor.BLACK, 2, 5);
         addKnights(PieceColor.BLACK, 1, 6);
         addRooks(PieceColor.BLACK, 0, 7);
     }
@@ -145,13 +148,13 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
             PieceColor enemyColor = getChessPiece().getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
 
             if ((wasNotInChess() &&
-                    (!getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), getChessPiece().getColor())
-                            || (!getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), enemyColor))))) {
+                    (!getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), getChessPiece().getCurrentLocation(), getChessPiece().getColor())
+                            || (!getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), getChessPiece().getCurrentLocation(), enemyColor))))) {
                 checkChess(newX, newY);
                 getChessPiece().placementUpdate(newX, newY, getPieces());
                 component = getChessBoard().findComponentAt(e.getX(), e.getY());
                 setWhiteTurn(!isWhiteTurn());
-            } else if (!wasNotInChess() && getChessPiece().selectedTeamIsInChess(new Point(newX, newY), getChessPiece().getColor())) {
+            } else if (!wasNotInChess() && getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), new Point(newX, newY), getChessPiece().getColor())) {
                 revokeChess();
                 getChessPiece().placementUpdate(newX, newY, getPieces());
                 component = getChessBoard().findComponentAt(e.getX(), e.getY());
@@ -178,7 +181,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
 
     private void checkChess(int newX, int newY) {
         PieceColor enemyColor = getChessPiece().getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-        if (getChessPiece().selectedTeamIsInChess(new Point(newX, newY), enemyColor)) {
+        if (getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), new Point(newX, newY), enemyColor)) {
             if (enemyColor == PieceColor.WHITE) {
                 setWhiteChess(true);
                 System.out.println("Black says: CHESS!");
@@ -193,7 +196,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         System.out.println();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                System.out.print(array[j][i] ? "1 " : "0 ");
+                System.out.print(array[i][j] ? "1 " : "0 ");
             }
             System.out.println();
         }

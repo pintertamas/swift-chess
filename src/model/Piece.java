@@ -48,15 +48,15 @@ public abstract class Piece extends JLabel implements Serializable {
         return color == PieceColor.WHITE ? getWhiteImage() : getBlackImage();
     }
 
-    public abstract boolean[][] getMoves(Point from, Point exclude);
+    public abstract boolean[][] getMoves(Point include, Point exclude);
 
     public boolean canMoveTo(int newX, int newY, Point exclude) {
         if (Functions.isOutside(newX, newY))
             return false;
-        return getMoves(getCurrentLocation(), exclude)[newX - 1][newY - 1];
+        return getMoves(new Point(newX, newY), exclude)[newX - 1][newY - 1];
     }
 
-    public boolean isFreeFromColorAndValid(int newX, int newY, PieceColor color, Point exclude) {
+    public boolean isFreeFromColorAndValid(int newX, int newY, PieceColor color, Point include, Point exclude) {
         if (Functions.isOutside(newX, newY))
             return false;
         for (Piece piece : getBoard().getPieces()) {
@@ -64,25 +64,23 @@ public abstract class Piece extends JLabel implements Serializable {
                 return true;
             if ((piece.getCurrentLocation().equals(new Point(newX, newY)))
                     && piece.getColor().equals(color))
-                return false;
+            return false;
         }
         return true;
     }
 
-    public void checkDiagonalMoves(Point from, Point exclude, boolean[][] moves, int relX, int relY) {
+    public void checkDiagonalMoves(Point include, Point exclude, boolean[][] moves, int relX, int relY) {
         int offset = 1;
         while (true) {
             // relX&relY from {-1;+1}
-            int newX = from.x + offset * relX;
-            int newY = from.y + offset * relY;
+            int newX = getCurrentLocation().x + offset * relX;
+            int newY = getCurrentLocation().y + offset * relY;
             PieceColor enemyColor = this.getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-            if (!this.isFreeFromColorAndValid(newX, newY, enemyColor, exclude) && !Functions.isOutside(newX, newY)) {
+            if (!this.isFreeFromColorAndValid(newX, newY, enemyColor, include, exclude) && !Functions.isOutside(newX, newY)) {
                 moves[newX - 1][newY - 1] = true;
                 return;
             }
-            if (this.isFreeFromColorAndValid(newX, newY, getColor(), exclude)) {
-                if (this.getType() == PieceType.ROOK)
-                    System.out.println(newX + " " + newY);
+            if (this.isFreeFromColorAndValid(newX, newY, getColor(), include, exclude)) {
                 moves[newX - 1][newY - 1] = true;
                 offset++;
             } else {
@@ -108,10 +106,10 @@ public abstract class Piece extends JLabel implements Serializable {
         this.setVisible(false);
     }
 
-    public boolean[][] addMovesTo(Point exclude, boolean[][] moves) {
-        boolean[][] possibleMoves = getMoves(getCurrentLocation(), exclude);
-        System.out.println(getType() + " - " + getCurrentLocation());
-        getBoard().printBoard(possibleMoves);
+    public boolean[][] addMovesTo(Point include, Point exclude, boolean[][] moves) {
+        boolean[][] possibleMoves = getMoves(include, exclude);
+        //System.out.println(getType() + " - " + getCurrentLocation());
+        //getBoard().printBoard(possibleMoves);
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (possibleMoves[i][j]) {
@@ -122,13 +120,12 @@ public abstract class Piece extends JLabel implements Serializable {
         return moves;
     }
 
-    public boolean selectedTeamIsInChess(Point exclude, PieceColor color) {
+    public boolean selectedTeamIsInChess(Point include, Point exclude, PieceColor color) {
         boolean[][] dangerZone = new boolean[8][8];
 
         for (Piece piece : getBoard().getPieces()) {
             if (!piece.getColor().equals(color)) {
-                dangerZone = piece.addMovesTo(exclude, dangerZone);
-                //System.out.println("currentLocation: " + piece.getCurrentLocation());
+                dangerZone = piece.addMovesTo(include, exclude, dangerZone);
             }
         }
 
@@ -138,6 +135,8 @@ public abstract class Piece extends JLabel implements Serializable {
 
         if (dangerZone[king.getCurrentLocation().y - 1][king.getCurrentLocation().x - 1]) {
             System.out.println("Your king is in danger");
+            getBoard().printBoard(dangerZone);
+
             return true;
         } else return false;
     }

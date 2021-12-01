@@ -14,16 +14,16 @@ public class RookPiece extends Piece {
     }
 
     @Override
-    public boolean[][] getMoves(Point from, Point exclude) {
+    public boolean[][] getMoves(Point include, Point exclude) {
         boolean[][] movingPoints = new boolean[8][8];
-        System.out.println(from);
 
-        checkDiagonalMoves(from, exclude, movingPoints, 0, 1);
-        checkDiagonalMoves(from, exclude, movingPoints, 0, -1);
-        checkDiagonalMoves(from, exclude, movingPoints, 1, 0);
-        checkDiagonalMoves(from, exclude, movingPoints, -1, 0);
+        checkDiagonalMoves(include, exclude, movingPoints, 0, 1);
+        checkDiagonalMoves(include, exclude, movingPoints, 0, -1);
+        checkDiagonalMoves(include, exclude, movingPoints, 1, 0);
+        checkDiagonalMoves(include, exclude, movingPoints, -1, 0);
 
-        //getBoard().printBoard(movingPoints);
+        System.out.println(getColor() + " " + getCurrentLocation());
+        getBoard().printBoard(movingPoints);
 
         return movingPoints;
     }

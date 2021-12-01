@@ -14,24 +14,24 @@ public class KingPiece extends Piece {
     }
 
     @Override
-    public boolean[][] getMoves(Point from, Point exclude) {
+    public boolean[][] getMoves(Point include, Point exclude) {
         boolean[][] movingPoints = new boolean[8][8];
-        checkMoves(from, exclude, movingPoints, 1, 1);
-        checkMoves(from, exclude, movingPoints, 1, 0);
-        checkMoves(from, exclude, movingPoints, 1, -1);
-        checkMoves(from, exclude, movingPoints, 0, 1);
-        checkMoves(from, exclude, movingPoints, 0, -1);
-        checkMoves(from, exclude, movingPoints, -1, 1);
-        checkMoves(from, exclude, movingPoints, -1, 0);
-        checkMoves(from, exclude, movingPoints, -1, -1);
+        checkMoves(include, exclude, movingPoints, 1, 1);
+        checkMoves(include, exclude, movingPoints, 1, 0);
+        checkMoves(include, exclude, movingPoints, 1, -1);
+        checkMoves(include, exclude, movingPoints, 0, 1);
+        checkMoves(include, exclude, movingPoints, 0, -1);
+        checkMoves(include, exclude, movingPoints, -1, 1);
+        checkMoves(include, exclude, movingPoints, -1, 0);
+        checkMoves(include, exclude, movingPoints, -1, -1);
 
         return movingPoints;
     }
 
-    private void checkMoves(Point from, Point exclude, boolean[][] moves, int relX, int relY) {
-        int newX = from.x + relX;
-        int newY = from.y + relY;
-        if (this.isFreeFromColorAndValid(newX, newY, this.getColor(), exclude) && !Functions.isOutside(newX, newY)) moves[newX - 1][newY - 1] = true;
+    private void checkMoves(Point include, Point exclude, boolean[][] moves, int relX, int relY) {
+        int newX = getCurrentLocation().x + relX;
+        int newY = getCurrentLocation().y + relY;
+        if (this.isFreeFromColorAndValid(newX, newY, this.getColor(), include, exclude) && !Functions.isOutside(newX, newY)) moves[newX - 1][newY - 1] = true;
     }
 
     @Override
