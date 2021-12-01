@@ -18,9 +18,13 @@ public class KnightPiece extends Piece {
         boolean[][] movingPoints = new boolean[8][8];
 
         checkMoves(from, exclude, movingPoints, 2, 1);
+        checkMoves(from, exclude, movingPoints, 2, -1);
         checkMoves(from, exclude, movingPoints, 1, 2);
+        checkMoves(from, exclude, movingPoints, 1, -2);
         checkMoves(from, exclude, movingPoints, -2, 1);
+        checkMoves(from, exclude, movingPoints, -2, -1);
         checkMoves(from, exclude, movingPoints, -1, 2);
+        checkMoves(from, exclude, movingPoints, -1, -2);
 
         return movingPoints;
     }

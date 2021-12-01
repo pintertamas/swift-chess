@@ -111,11 +111,11 @@ public abstract class Piece extends JLabel implements Serializable {
     public boolean[][] addMovesTo(Point exclude, boolean[][] moves) {
         boolean[][] possibleMoves = getMoves(getCurrentLocation(), exclude);
         System.out.println(getType() + " - " + getCurrentLocation());
-        //getBoard().printBoard(possibleMoves);
+        getBoard().printBoard(possibleMoves);
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (possibleMoves[j][i]) {
-                    moves[i][j] = true;
+                if (possibleMoves[i][j]) {
+                    moves[j][i] = true;
                 }
             }
         }
