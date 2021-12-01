@@ -23,7 +23,7 @@ public class RookPiece extends Piece {
         checkDiagonalMoves(from, exclude, movingPoints, 1, 0);
         checkDiagonalMoves(from, exclude, movingPoints, -1, 0);
 
-        getBoard().printBoard(movingPoints);
+        //getBoard().printBoard(movingPoints);
 
         return movingPoints;
     }

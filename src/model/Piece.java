@@ -69,7 +69,7 @@ public abstract class Piece extends JLabel implements Serializable {
         return true;
     }
 
-    public void checkDiagonalMoves(Point exclude, Point from, boolean[][] moves, int relX, int relY) {
+    public void checkDiagonalMoves(Point from, Point exclude, boolean[][] moves, int relX, int relY) {
         int offset = 1;
         while (true) {
             // relX&relY from {-1;+1}
@@ -81,6 +81,8 @@ public abstract class Piece extends JLabel implements Serializable {
                 return;
             }
             if (this.isFreeFromColorAndValid(newX, newY, getColor(), exclude)) {
+                if (this.getType() == PieceType.ROOK)
+                    System.out.println(newX + " " + newY);
                 moves[newX - 1][newY - 1] = true;
                 offset++;
             } else {
@@ -108,10 +110,12 @@ public abstract class Piece extends JLabel implements Serializable {
 
     public boolean[][] addMovesTo(Point exclude, boolean[][] moves) {
         boolean[][] possibleMoves = getMoves(getCurrentLocation(), exclude);
+        System.out.println(getType() + " - " + getCurrentLocation());
+        //getBoard().printBoard(possibleMoves);
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (possibleMoves[i][j]) {
-                    moves[j][i] = true;
+                if (possibleMoves[j][i]) {
+                    moves[i][j] = true;
                 }
             }
         }
@@ -122,8 +126,10 @@ public abstract class Piece extends JLabel implements Serializable {
         boolean[][] dangerZone = new boolean[8][8];
 
         for (Piece piece : getBoard().getPieces()) {
-            if (!piece.getColor().equals(color))
+            if (!piece.getColor().equals(color)) {
                 dangerZone = piece.addMovesTo(exclude, dangerZone);
+                //System.out.println("currentLocation: " + piece.getCurrentLocation());
+            }
         }
 
         Piece king = getKing(color);

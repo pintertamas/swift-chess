@@ -193,7 +193,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         System.out.println();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                System.out.print(array[i][j] ? "1 " : "0 ");
+                System.out.print(array[j][i] ? "1 " : "0 ");
             }
             System.out.println();
         }
