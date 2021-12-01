@@ -7,7 +7,6 @@ import utils.PieceType;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class QueenPiece extends Piece {
     public QueenPiece(PieceColor color, int location, ChessBoard board) {

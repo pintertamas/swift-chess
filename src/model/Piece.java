@@ -12,12 +12,12 @@ import java.util.ArrayList;
 
 public abstract class Piece extends JLabel implements Serializable {
 
-    protected PieceColor color;
-    protected int boardLocation;
+    protected final PieceColor color;
+    protected final int boardLocation;
     protected Point lastLocation;
     protected Point currentLocation;
-    protected boolean[][] moves;
-    protected ChessBoard board;
+    protected final boolean[][] moves;
+    protected final ChessBoard board;
 
     public Piece(PieceColor color, int location, ChessBoard board) {
         // it centers the image

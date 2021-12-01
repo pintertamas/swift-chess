@@ -3,7 +3,6 @@ package controller;
 import model.*;
 
 import java.awt.*;
-import java.awt.Color;
 import java.awt.event.*;
 import java.util.ArrayList;
 
@@ -12,7 +11,7 @@ import utils.*;
 import javax.swing.*;
 
 public class ChessBoard extends JFrame implements MouseListener, MouseMotionListener {
-    JLayeredPane layeredPane;
+    final JLayeredPane layeredPane;
     JPanel chessBoard;
     Piece chessPiece;
     int xAdjustment;
@@ -49,25 +48,24 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
             }
         }
 
-        JPanel panel = (JPanel) getChessBoard().getComponent(0);
         addWhitePieces();
         addBlackPieces();
         drawPieces();
     }
 
     private void addWhitePieces() {
-        //addPawns(PieceColor.WHITE, 48);
+        addPawns(PieceColor.WHITE, 48);
         addRoyalFamily(PieceColor.WHITE, 59, 60);
-        //addBishops(PieceColor.WHITE, 58, 61);
-        //addKnights(PieceColor.WHITE, 57, 62);
+        addBishops(PieceColor.WHITE, 58, 61);
+        addKnights(PieceColor.WHITE, 57, 62);
         addRooks(PieceColor.WHITE, 56, 63);
     }
 
     private void addBlackPieces() {
-        //addPawns(PieceColor.BLACK, 8);
+        addPawns(PieceColor.BLACK, 8);
         addRoyalFamily(PieceColor.BLACK, 3, 4);
-        //addBishops(PieceColor.BLACK, 2, 5);
-        //addKnights(PieceColor.BLACK, 1, 6);
+        addBishops(PieceColor.BLACK, 2, 5);
+        addKnights(PieceColor.BLACK, 1, 6);
         addRooks(PieceColor.BLACK, 0, 7);
     }
 
@@ -274,10 +272,6 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         return blackChess;
     }
 
-    public void setChessBoard(JPanel chessBoard) {
-        this.chessBoard = chessBoard;
-    }
-
     public void setChessPiece(Piece chessPiece) {
         this.chessPiece = chessPiece;
     }
@@ -288,10 +282,6 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
 
     public void setyAdjustment(int yAdjustment) {
         this.yAdjustment = yAdjustment;
-    }
-
-    public void setPieces(ArrayList<Piece> pieces) {
-        this.pieces = pieces;
     }
 
     public void setWhiteTurn(boolean whiteTurn) {
