@@ -9,6 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 
 public abstract class Piece extends JLabel implements Serializable {
 
@@ -16,7 +18,6 @@ public abstract class Piece extends JLabel implements Serializable {
     protected final int boardLocation;
     protected Point lastLocation;
     protected Point currentLocation;
-    protected final boolean[][] moves;
     protected final ChessBoard board;
 
     public Piece(PieceColor color, int location, ChessBoard board) {
@@ -24,7 +25,6 @@ public abstract class Piece extends JLabel implements Serializable {
         super(Functions.getImage("blank.png"));
         this.color = color;
         this.boardLocation = location;
-        moves = new boolean[8][8];
         this.board = board;
     }
 
@@ -56,6 +56,37 @@ public abstract class Piece extends JLabel implements Serializable {
         return getMoves(new Point(newX, newY), exclude)[newX - 1][newY - 1];
     }
 
+    public boolean hasMoves() {
+        boolean[][] moves = getMoves(getCurrentLocation(), new Point(-1, -1));
+        for (boolean[] row : moves) {
+            for (boolean square : row) {
+                if (square) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public Point pickRandomMove() {
+        Point randomMove = new Point(-1, -1);
+        Random random = new Random();
+        boolean[][] moves = getMoves(getCurrentLocation(), new Point(-1, -1));
+        ArrayList<Point> validMoves = new ArrayList<>();
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (moves[i][j]) {
+                    validMoves.add(new Point(i, j));
+                }
+            }
+        }
+        for (Point p : validMoves)
+            System.out.println(p);
+        randomMove = validMoves.get(random.nextInt(validMoves.size()));
+        return randomMove;
+    }
+
     public boolean isFreeFromColorAndValid(int newX, int newY, PieceColor color, Point include, Point exclude) {
         if (Functions.isOutside(newX, newY))
             return false;
@@ -64,7 +95,7 @@ public abstract class Piece extends JLabel implements Serializable {
                 return true;
             if ((piece.getCurrentLocation().equals(new Point(newX, newY)))
                     && piece.getColor().equals(color))
-            return false;
+                return false;
         }
         return true;
     }
@@ -192,5 +223,13 @@ public abstract class Piece extends JLabel implements Serializable {
 
     public ChessBoard getBoard() {
         return board;
+    }
+
+    @Override
+    public String toString() {
+        return getType() + "{" +
+                "color=" + color +
+                ", currentLocation=" + currentLocation +
+                '}';
     }
 }

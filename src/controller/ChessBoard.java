@@ -1,11 +1,13 @@
 package controller;
 
+import db.Database;
 import model.*;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Random;
 
 import utils.*;
 
@@ -23,6 +25,35 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     boolean blackChess;
     boolean againstRobot;
 
+    private class CustomKeyListener extends KeyAdapter implements Serializable {
+        ChessBoard parentFrame;
+        String message = "";
+
+        public CustomKeyListener(ChessBoard parentFrame) {
+            this.parentFrame = parentFrame;
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == 87) {
+                setMessage("White surrendered!");
+            } else if (e.getKeyCode() == 66) {
+                setMessage("Black surrendered!");
+            }
+            JOptionPane.showMessageDialog(getChessBoard(), getMessage());
+            new Database().saveGame(new ChessBoard(isAgainstRobot()));
+            parentFrame.dispose();
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+    }
+
     public ChessBoard(boolean againstRobot) {
         this.againstRobot = againstRobot;
         whiteTurn = true;
@@ -38,6 +69,10 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         chessBoard.setLayout(new GridLayout(8, 8));
         chessBoard.setPreferredSize(boardSize);
         chessBoard.setBounds(0, 0, boardSize.width, boardSize.height);
+        this.setFocusable(true);
+        this.requestFocus();
+        CustomKeyListener listener = new CustomKeyListener(this);
+        this.addKeyListener(listener);
         pieces = new ArrayList<>();
 
         for (int i = 0; i < 8; i++) {
@@ -71,7 +106,6 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         addKnights(PieceColor.BLACK, 1, 6);
         addRooks(PieceColor.BLACK, 0, 7);
     }
-
 
     private void drawPieces() {
         for (Piece piece : getPieces()) {
@@ -114,6 +148,29 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         Piece secondBishop = new KnightPiece(color, secondBishopLocation, this);
         firstBishop.init(getPieces());
         secondBishop.init(getPieces());
+    }
+
+    private void handleRobotMove() {
+        Piece randomPiece = pickRandomPiece();
+        Point randomMove = randomPiece.pickRandomMove();
+        Point currentLocationInPixels = new Point(
+                randomPiece.getCurrentLocation().x * getWidth() / 8 + getWidth() / 4,
+                randomPiece.getCurrentLocation().y * getHeight() / 8 + getHeight() / 4);
+        Point randomPointInPixels = new Point(
+                randomMove.x * getWidth() / 8 + getWidth() / 4,
+                randomMove.y * getHeight() / 8 + getHeight() / 4);
+        System.out.println(randomPiece);
+        System.out.println(randomMove);
+        System.out.println(randomPointInPixels);
+    }
+
+    private Piece pickRandomPiece() {
+        Random random = new Random();
+        Piece randomPiece = pieces.get(random.nextInt(pieces.size()));
+        while (!(randomPiece.hasMoves() && randomPiece.getColor().equals(PieceColor.BLACK))) {
+            randomPiece = pieces.get(random.nextInt(pieces.size()));
+        }
+        return randomPiece;
     }
 
     public void mousePressed(MouseEvent e) {
@@ -203,7 +260,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     }
 
     private void revokeChess() {
-        PieceColor enemyColor = chessPiece.getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+        PieceColor enemyColor = getChessPiece().getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
         if (enemyColor == PieceColor.WHITE) {
             setBlackChess(false);
             System.out.println("Black saved");
@@ -297,5 +354,9 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
 
     public void setBlackChess(boolean blackChess) {
         this.blackChess = blackChess;
+    }
+
+    public boolean isAgainstRobot() {
+        return againstRobot;
     }
 }
