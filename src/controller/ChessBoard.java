@@ -14,45 +14,16 @@ import utils.*;
 import javax.swing.*;
 
 public class ChessBoard extends JFrame implements MouseListener, MouseMotionListener, Serializable {
-    final JLayeredPane layeredPane;
-    JPanel chessBoard;
-    Piece chessPiece;
-    int xAdjustment;
-    int yAdjustment;
-    ArrayList<Piece> pieces;
-    boolean whiteTurn;
-    boolean whiteChess;
-    boolean blackChess;
-    boolean againstRobot;
-
-    private class CustomKeyListener extends KeyAdapter implements Serializable {
-        ChessBoard parentFrame;
-        String message = "";
-
-        public CustomKeyListener(ChessBoard parentFrame) {
-            this.parentFrame = parentFrame;
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == 87) {
-                setMessage("White surrendered!");
-            } else if (e.getKeyCode() == 66) {
-                setMessage("Black surrendered!");
-            }
-            JOptionPane.showMessageDialog(getChessBoard(), getMessage());
-            new Database().saveGame(new ChessBoard(isAgainstRobot()));
-            parentFrame.dispose();
-        }
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-    }
+    private final JLayeredPane layeredPane;
+    private JPanel chessBoard;
+    private Piece chessPiece;
+    private int xAdjustment;
+    private int yAdjustment;
+    private ArrayList<Piece> pieces;
+    private boolean whiteTurn;
+    private boolean whiteChess;
+    private boolean blackChess;
+    private final boolean againstRobot;
 
     public ChessBoard(boolean againstRobot) {
         this.againstRobot = againstRobot;
@@ -150,41 +121,34 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         secondBishop.init(getPieces());
     }
 
-    private void handleRobotMove() {
-        Piece randomPiece = pickRandomPiece();
-        Point randomMove = randomPiece.pickRandomMove();
-        Point currentLocationInPixels = new Point(
-                randomPiece.getCurrentLocation().x * getWidth() / 8 + getWidth() / 4,
-                randomPiece.getCurrentLocation().y * getHeight() / 8 + getHeight() / 4);
-        Point randomPointInPixels = new Point(
-                randomMove.x * getWidth() / 8 + getWidth() / 4,
-                randomMove.y * getHeight() / 8 + getHeight() / 4);
-        System.out.println(randomPiece);
-        System.out.println(randomMove);
-        System.out.println(randomPointInPixels);
-    }
-
     private Piece pickRandomPiece() {
         Random random = new Random();
-        Piece randomPiece = pieces.get(random.nextInt(pieces.size()));
+        Piece randomPiece = getPieces().get(random.nextInt(getPieces().size()));
         while (!(randomPiece.hasMoves() && randomPiece.getColor().equals(PieceColor.BLACK))) {
-            randomPiece = pieces.get(random.nextInt(pieces.size()));
+            randomPiece = getPieces().get(random.nextInt(getPieces().size()));
         }
+        System.out.println(randomPiece);
         return randomPiece;
     }
 
     public void mousePressed(MouseEvent e) {
+        handleBeginningOfMove(e.getX(), e.getY());
+    }
+
+    private void handleBeginningOfMove(int pixelX, int pixelY) {
         setChessPiece(null);
-        Component c = getChessBoard().findComponentAt(e.getX(), e.getY());
+        Component c = getChessBoard().findComponentAt(pixelX, pixelY);
+
+        System.out.println(c.getClass());
 
         if (c.getClass().equals(JPanel.class))
             return;
 
         Point parentLocation = c.getParent().getLocation();
-        setxAdjustment(parentLocation.x - e.getX());
-        setyAdjustment(parentLocation.y - e.getY());
+        setxAdjustment(parentLocation.x - pixelX);
+        setyAdjustment(parentLocation.y - pixelY);
         setChessPiece((Piece) c);
-        getChessPiece().setLocation(e.getX() + getXadjustment(), e.getY() + getYadjustment());
+        getChessPiece().setLocation(pixelX + getXadjustment(), pixelY + getYadjustment());
         getChessPiece().setLastLocation(getChessPiece().getLocation());
         getChessPiece().setSize(getChessPiece().getWidth(), getChessPiece().getHeight());
         getLayeredPane().add(getChessPiece(), JLayeredPane.DRAG_LAYER);
@@ -196,25 +160,54 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     }
 
     public void mouseReleased(MouseEvent e) {
-        if (getChessPiece() == null) return;
-        int newX = Functions.getLocationOnX(e.getX(), getChessBoard().getSize().width);
-        int newY = Functions.getLocationOnY(e.getY(), getChessBoard().getSize().height);
+        if (!isAgainstRobot() || isWhiteTurn()) {
+            if (getChessPiece() == null) return;
+            int newX = Functions.getLocationOnX(e.getX(), getChessBoard().getSize().width);
+            int newY = Functions.getLocationOnY(e.getY(), getChessBoard().getSize().height);
+            handleMove(newX, newY, e.getX(), e.getY());
+        }
+        if (isAgainstRobot() && !isWhiteTurn()) {
+            handleRobotMove();
+        }
+    }
+
+    private void handleRobotMove() {
+        Piece randomPiece = pickRandomPiece();
+        Point randomPieceCurrentLocation = randomPiece.getCurrentLocation();
+        Point randomPieceNextLocation = randomPiece.pickRandomMove();
+        try {
+            handleBeginningOfMove(
+                    randomPieceCurrentLocation.x * 80 - 40,
+                    randomPieceCurrentLocation.y * 80 - 40);
+            handleMove(
+                    randomPieceNextLocation.x,
+                    randomPieceNextLocation.y,
+                    randomPieceNextLocation.x * 80 - 40,
+                    randomPieceNextLocation.y * 80 - 40);
+        } catch (Exception e) {
+            setWhiteTurn(false); //try again
+        }
+    }
+
+    private void handleMove(int newX, int newY, int pixelX, int pixelY) {
         Component component;
 
-        if ((isYourTurn() && getChessPiece().canMoveTo(newX, newY, getChessPiece().getCurrentLocation()))) {
+        if ((isYourTurn()
+                && getChessPiece().canMoveTo(newX, newY, getChessPiece().getCurrentLocation()))) {
             PieceColor enemyColor = getChessPiece().getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
 
+            //TODO a király tud sakkba lépni
             if ((wasNotInChess() &&
                     (!getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), getChessPiece().getCurrentLocation(), getChessPiece().getColor())
                             || (!getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), getChessPiece().getCurrentLocation(), enemyColor))))) {
                 checkChess(newX, newY);
                 getChessPiece().placementUpdate(newX, newY, getPieces());
-                component = getChessBoard().findComponentAt(e.getX(), e.getY());
+                component = getChessBoard().findComponentAt(pixelX, pixelY);
                 setWhiteTurn(!isWhiteTurn());
             } else if (!wasNotInChess() && getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), new Point(newX, newY), getChessPiece().getColor())) {
                 revokeChess();
                 getChessPiece().placementUpdate(newX, newY, getPieces());
-                component = getChessBoard().findComponentAt(e.getX(), e.getY());
+                component = getChessBoard().findComponentAt(pixelX, pixelY);
                 setWhiteTurn(!isWhiteTurn());
             } else {
                 getChessPiece().setVisible(false);
@@ -298,6 +291,35 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     }
 
     public void mouseExited(MouseEvent e) {
+    }
+
+    private class CustomKeyListener extends KeyAdapter implements Serializable {
+        ChessBoard parentFrame;
+        String message = "";
+
+        public CustomKeyListener(ChessBoard parentFrame) {
+            this.parentFrame = parentFrame;
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == 87) {
+                setMessage("White surrendered!");
+            } else if (e.getKeyCode() == 66) {
+                setMessage("Black surrendered!");
+            }
+            JOptionPane.showMessageDialog(getChessBoard(), getMessage());
+            new Database().saveGame(new ChessBoard(isAgainstRobot()));
+            parentFrame.dispose();
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
     }
 
     public ArrayList<Piece> getPieces() {

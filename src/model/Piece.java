@@ -69,15 +69,15 @@ public abstract class Piece extends JLabel implements Serializable {
     }
 
     public Point pickRandomMove() {
-        Point randomMove = new Point(-1, -1);
+        Point randomMove;
         Random random = new Random();
         boolean[][] moves = getMoves(getCurrentLocation(), new Point(-1, -1));
         ArrayList<Point> validMoves = new ArrayList<>();
 
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (moves[i][j]) {
-                    validMoves.add(new Point(i, j));
+                if (moves[j][i]) {
+                    validMoves.add(new Point(j+1, i+1));
                 }
             }
         }
