@@ -44,9 +44,9 @@ public class PawnPiece extends Piece {
             movingPoints[from.x - 1][newYDoubleStep - 1] = !isBlocked;
         }
         int newX = from.x - 1;
-        handleObliqueMoves(movingPoints, newYSingleStep, newX);
+        handleObliqueMoves(include, exclude, movingPoints, newYSingleStep, newX);
         newX = from.x + 1;
-        handleObliqueMoves(movingPoints, newYSingleStep, newX);
+        handleObliqueMoves(include, exclude, movingPoints, newYSingleStep, newX);
 
         return movingPoints;
     }
@@ -66,10 +66,13 @@ public class PawnPiece extends Piece {
         return hittingMoves;
     }
 
-    private void handleObliqueMoves(boolean[][] movingPoints, int newYSingleStep, int newX) {
+    private void handleObliqueMoves(Point include, Point exclude, boolean[][] movingPoints, int newYSingleStep, int newX) {
         if (!Functions.isOutside(newX, newYSingleStep)) {
             for (Piece piece : getBoard().getPieces()) {
-                if (piece.getCurrentLocation().equals(new Point(newX, newYSingleStep)) && piece.getColor() != getColor()) {
+                if (piece.getColor() != getColor()
+                        && piece.getCurrentLocation().equals(new Point(newX, newYSingleStep))
+                        && !exclude.equals(new Point(newX, newYSingleStep))
+                        || include.equals(new Point(newX, newYSingleStep))) {
                     movingPoints[newX - 1][newYSingleStep - 1] = true;
                     break;
                 }
