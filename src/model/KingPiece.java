@@ -8,6 +8,9 @@ import utils.PieceType;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A királyt reprezentálja
+ */
 public class KingPiece extends Piece {
     public KingPiece(PieceColor color, int location, ChessBoard board) {
         super(color, location, board);
@@ -26,12 +29,6 @@ public class KingPiece extends Piece {
         checkMoves(include, exclude, movingPoints, -1, -1);
 
         return movingPoints;
-    }
-
-    private void checkMoves(Point include, Point exclude, boolean[][] moves, int relX, int relY) {
-        int newX = getCurrentLocation().x + relX;
-        int newY = getCurrentLocation().y + relY;
-        if (this.isFreeFromColorAndValid(newX, newY, this.getColor(), include, exclude) && !Functions.isOutside(newX, newY)) moves[newX - 1][newY - 1] = true;
     }
 
     @Override

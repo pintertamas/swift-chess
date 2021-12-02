@@ -17,14 +17,14 @@ public class QueenPiece extends Piece {
     public boolean[][] getMoves(Point include, Point exclude) {
         boolean[][] movingPoints = new boolean[8][8];
 
-        checkDiagonalMoves(include, exclude, movingPoints, 1, 1);
-        checkDiagonalMoves(include, exclude, movingPoints, -1, 1);
-        checkDiagonalMoves(include, exclude, movingPoints, 1, -1);
-        checkDiagonalMoves(include, exclude, movingPoints, -1, -1);
-        checkDiagonalMoves(include, exclude, movingPoints, 0, 1);
-        checkDiagonalMoves(include, exclude, movingPoints, 0, -1);
-        checkDiagonalMoves(include, exclude, movingPoints, 1, 0);
-        checkDiagonalMoves(include, exclude, movingPoints, -1, 0);
+        checkLongMoves(include, exclude, movingPoints, 1, 1);
+        checkLongMoves(include, exclude, movingPoints, -1, 1);
+        checkLongMoves(include, exclude, movingPoints, 1, -1);
+        checkLongMoves(include, exclude, movingPoints, -1, -1);
+        checkLongMoves(include, exclude, movingPoints, 0, 1);
+        checkLongMoves(include, exclude, movingPoints, 0, -1);
+        checkLongMoves(include, exclude, movingPoints, 1, 0);
+        checkLongMoves(include, exclude, movingPoints, -1, 0);
 
         return movingPoints;
     }

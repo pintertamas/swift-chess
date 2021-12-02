@@ -1,11 +1,13 @@
-import controller.ChessBoard;
 import controller.Menu;
-import db.Database;
 
-import javax.swing.*;
-import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
-
+/**
+ * Indító osztály
+ */
 public class SwiftChess {
+    /**
+     * Elindítja a Menüt
+     * @param args
+     */
     public static void main(String[] args) {
         new Menu();
     }

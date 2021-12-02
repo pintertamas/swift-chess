@@ -8,6 +8,9 @@ import utils.PieceType;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A bástyákat reprezentálja
+ */
 public class RookPiece extends Piece {
     public RookPiece(PieceColor color, int location, ChessBoard board) {
         super(color, location, board);
@@ -17,10 +20,10 @@ public class RookPiece extends Piece {
     public boolean[][] getMoves(Point include, Point exclude) {
         boolean[][] movingPoints = new boolean[8][8];
 
-        checkDiagonalMoves(include, exclude, movingPoints, 0, 1);
-        checkDiagonalMoves(include, exclude, movingPoints, 0, -1);
-        checkDiagonalMoves(include, exclude, movingPoints, 1, 0);
-        checkDiagonalMoves(include, exclude, movingPoints, -1, 0);
+        checkLongMoves(include, exclude, movingPoints, 0, 1);
+        checkLongMoves(include, exclude, movingPoints, 0, -1);
+        checkLongMoves(include, exclude, movingPoints, 1, 0);
+        checkLongMoves(include, exclude, movingPoints, -1, 0);
 
         //System.out.println(getColor() + " " + getCurrentLocation());
         //getBoard().printBoard(movingPoints);

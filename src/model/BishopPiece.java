@@ -8,6 +8,9 @@ import utils.PieceType;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A futókat reprezentálja
+ */
 public class BishopPiece extends Piece {
     public BishopPiece(PieceColor color, int location, ChessBoard board) {
         super(color, location, board);
@@ -17,10 +20,10 @@ public class BishopPiece extends Piece {
     public boolean[][] getMoves(Point include, Point exclude) {
         boolean[][] movingPoints = new boolean[8][8];
 
-        checkDiagonalMoves(include, exclude, movingPoints, 1, 1);
-        checkDiagonalMoves(include, exclude, movingPoints, -1, 1);
-        checkDiagonalMoves(include, exclude, movingPoints, 1, -1);
-        checkDiagonalMoves(include, exclude, movingPoints, -1, -1);
+        checkLongMoves(include, exclude, movingPoints, 1, 1);
+        checkLongMoves(include, exclude, movingPoints, -1, 1);
+        checkLongMoves(include, exclude, movingPoints, 1, -1);
+        checkLongMoves(include, exclude, movingPoints, -1, -1);
 
         return movingPoints;
     }

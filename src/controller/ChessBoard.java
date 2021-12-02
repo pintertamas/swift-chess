@@ -13,6 +13,9 @@ import utils.*;
 
 import javax.swing.*;
 
+/**
+ * A sakktáblán történő dolgokért felelős osztály
+ */
 public class ChessBoard extends JFrame implements MouseListener, MouseMotionListener, Serializable {
     private final JLayeredPane layeredPane;
     private JPanel chessBoard;
@@ -25,6 +28,11 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     private boolean blackChess;
     private final boolean againstRobot;
 
+    /**
+     * Az osztály konstruktora
+     *
+     * @param againstRobot itt adható meg hogy robot ellen akarunk-e játszani
+     */
     public ChessBoard(boolean againstRobot) {
         this.againstRobot = againstRobot;
         whiteTurn = true;
@@ -62,6 +70,9 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         drawPieces();
     }
 
+    /**
+     * Hozzáadja a bábukhoz a fehér bábukat
+     */
     private void addWhitePieces() {
         addPawns(PieceColor.WHITE, 48);
         addRoyalFamily(PieceColor.WHITE, 59, 60);
@@ -70,6 +81,9 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         addRooks(PieceColor.WHITE, 56, 63);
     }
 
+    /**
+     * Hozzáadja a bábukhoz a fekete bábukat
+     */
     private void addBlackPieces() {
         addPawns(PieceColor.BLACK, 8);
         addRoyalFamily(PieceColor.BLACK, 3, 4);
@@ -78,6 +92,9 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         addRooks(PieceColor.BLACK, 0, 7);
     }
 
+    /**
+     * Hozzáadja a sakktáblához, ezzel pedig kirajzolja a bábukat a képernyőre
+     */
     private void drawPieces() {
         for (Piece piece : getPieces()) {
             JPanel panel = (JPanel) getChessBoard().getComponent(piece.getBoardLocation());
@@ -85,6 +102,12 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
     }
 
+    /**
+     * Létrehozza a gyalogokat
+     *
+     * @param color a gyalogok színe
+     * @param from  ettől a mezőtől kezdve pakol fel 8 darabot
+     */
     private void addPawns(PieceColor color, int from) {
         Piece piece;
         for (int i = from; i < from + 8; i++) {
@@ -93,6 +116,13 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
     }
 
+    /**
+     * Létrehozza a királyt és a királynőt
+     *
+     * @param color         a színük
+     * @param kingLocation  a király pozíciója
+     * @param queenLocation a királynő pozíciója
+     */
     private void addRoyalFamily(PieceColor color, int kingLocation, int queenLocation) {
         Piece king = new KingPiece(color, kingLocation, this);
         Piece queen = new QueenPiece(color, queenLocation, this);
@@ -100,6 +130,13 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         queen.init(getPieces());
     }
 
+    /**
+     * Létrehozza a futókat
+     *
+     * @param color                a futók színe
+     * @param firstBishopLocation  az egyik futó pozíciója
+     * @param secondBishopLocation a másik futó pozíciója
+     */
     private void addBishops(PieceColor color, int firstBishopLocation, int secondBishopLocation) {
         Piece firstBishop = new BishopPiece(color, firstBishopLocation, this);
         Piece secondBishop = new BishopPiece(color, secondBishopLocation, this);
@@ -107,6 +144,13 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         secondBishop.init(getPieces());
     }
 
+    /**
+     * Létrehozza a bástyákat
+     *
+     * @param color              a bástyák színe
+     * @param firstRookLocation  az egyik bástya pozíciója
+     * @param secondRookLocation a másik bástya pozíiója
+     */
     private void addRooks(PieceColor color, int firstRookLocation, int secondRookLocation) {
         Piece firstRook = new RookPiece(color, firstRookLocation, this);
         Piece secondRook = new RookPiece(color, secondRookLocation, this);
@@ -114,6 +158,13 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         secondRook.init(getPieces());
     }
 
+    /**
+     * Létrehozza a lovakat
+     *
+     * @param color                a lovak színe
+     * @param firstBishopLocation  az egyik ló pozíciója
+     * @param secondBishopLocation a másik ló pozíciója
+     */
     private void addKnights(PieceColor color, int firstBishopLocation, int secondBishopLocation) {
         Piece firstBishop = new KnightPiece(color, firstBishopLocation, this);
         Piece secondBishop = new KnightPiece(color, secondBishopLocation, this);
@@ -121,6 +172,11 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         secondBishop.init(getPieces());
     }
 
+    /**
+     * Kiválaszt véletlenszerűen egy bábut a sakktábláról
+     *
+     * @return a véletlenszerű bábut
+     */
     private Piece pickRandomPiece() {
         Random random = new Random();
         Piece randomPiece = getPieces().get(random.nextInt(getPieces().size()));
@@ -131,10 +187,21 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         return randomPiece;
     }
 
+    /**
+     * Lekezeli az egérkattintás eseményét
+     *
+     * @param e az esemény
+     */
     public void mousePressed(MouseEvent e) {
         handleBeginningOfMove(e.getX(), e.getY());
     }
 
+    /**
+     * Ez a függvény intézi a körök elején lévő bábuválasztást
+     *
+     * @param pixelX a választani kívánt bábu X pozíciója a sakktáblán pixelben
+     * @param pixelY a választani kívánt bábu Y pozíciója a sakktáblán pixelben
+     */
     private void handleBeginningOfMove(int pixelX, int pixelY) {
         setChessPiece(null);
         Component c = getChessBoard().findComponentAt(pixelX, pixelY);
@@ -154,11 +221,21 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         getLayeredPane().add(getChessPiece(), JLayeredPane.DRAG_LAYER);
     }
 
+    /**
+     * Lekezeli az egér húzás eseményét
+     *
+     * @param e az esemény
+     */
     public void mouseDragged(MouseEvent e) {
         if (getChessPiece() == null) return;
         getChessPiece().setLocation(e.getX() + getXadjustment(), e.getY() + getYadjustment());
     }
 
+    /**
+     * Lekezeli az egér felengedésének eseményét
+     *
+     * @param e az esemény
+     */
     public void mouseReleased(MouseEvent e) {
         if (!isAgainstRobot() || isWhiteTurn()) {
             if (getChessPiece() == null) return;
@@ -171,6 +248,9 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
     }
 
+    /**
+     * A robot mozgásáért felelős
+     */
     private void handleRobotMove() {
         Piece randomPiece = pickRandomPiece();
         Point randomPieceCurrentLocation = randomPiece.getCurrentLocation();
@@ -189,6 +269,14 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
     }
 
+    /**
+     * Egy bábu mozgásáért felelős
+     *
+     * @param newX   a kívánt új pozíció X pozíciója koordinátában
+     * @param newY   a kívánt új pozíció Y pozíciója koordinátában
+     * @param pixelX a kívánt új pozíció X pozíciója pixelben
+     * @param pixelY a kívánt új pozíció Y pozíciója pixelben
+     */
     private void handleMove(int newX, int newY, int pixelX, int pixelY) {
         Component component;
 
@@ -225,10 +313,21 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         checkChess(getChessPiece().getCurrentLocation().x, getChessPiece().getCurrentLocation().y);
     }
 
+    /**
+     * Visszaadja hogy az adott bábu köre van-e éppen
+     *
+     * @return az adott bábu köre van-e éppen
+     */
     private boolean isYourTurn() {
         return getChessPiece().getColor() == PieceColor.WHITE && isWhiteTurn() || (getChessPiece().getColor() == PieceColor.BLACK && !isWhiteTurn());
     }
 
+    /**
+     * Megnézi hogy sakk alakult-e ki és ennek megfelelően beállítja a változókat
+     *
+     * @param newX a pozíció amiben nézi X koordinázája
+     * @param newY a pozíció amiben nézi Y koordinázája
+     */
     private void checkChess(int newX, int newY) {
         PieceColor enemyColor = getChessPiece().getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
         if (getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), new Point(newX, newY), enemyColor)) {
@@ -242,7 +341,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
     }
 
-    public void printBoard(boolean[][] array) {
+    /*public void printBoard(boolean[][] array) {
         System.out.println();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -250,8 +349,11 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
             }
             System.out.println();
         }
-    }
+    }*/
 
+    /**
+     * Visszavonja a sakkot a csapatának
+     */
     private void revokeChess() {
         PieceColor enemyColor = getChessPiece().getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
         if (enemyColor == PieceColor.WHITE) {
@@ -263,11 +365,21 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
     }
 
+    /**
+     * Visszaadja hogy sakkban állt-e eddig a bábu
+     *
+     * @return sakkban állt-e a bábu
+     */
     private boolean wasNotInChess() {
         return (getChessPiece().getColor() == PieceColor.WHITE && !isWhiteChess())
                 || (getChessPiece().getColor() == PieceColor.BLACK && !isBlackChess());
     }
 
+    /**
+     * Lekezeli az egérkattintás eseményét
+     *
+     * @param e az esemény
+     */
     public void mouseClicked(MouseEvent e) {
         if (getChessPiece() != null) {
             if (getChessPiece().getType() == PieceType.PAWN
@@ -284,23 +396,51 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
     }
 
+    /**
+     * Lekezeli az egér mozgatás eseményét
+     *
+     * @param e az esemény
+     */
     public void mouseMoved(MouseEvent e) {
     }
 
+    /**
+     * Lekezeli az eseményt amikor az egér bekerül a képernyőre
+     *
+     * @param e az esemény
+     */
     public void mouseEntered(MouseEvent e) {
     }
 
+    /**
+     * Lekezeli az eseményt amikor az egér elhagyja a képernyőt
+     *
+     * @param e az esemény
+     */
     public void mouseExited(MouseEvent e) {
     }
 
+    /**
+     * Billentyű lenyomások érzékeléséhez készített belső osztály
+     */
     private class CustomKeyListener extends KeyAdapter implements Serializable {
         ChessBoard parentFrame;
         String message = "";
 
+        /**
+         * Konstruktor
+         *
+         * @param parentFrame a sakktábla amire rá akarjuk rakni
+         */
         public CustomKeyListener(ChessBoard parentFrame) {
             this.parentFrame = parentFrame;
         }
 
+        /**
+         * Lekezeli a billentyű lenyomásának eseményét
+         *
+         * @param e az esemény
+         */
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == 87) {
@@ -313,10 +453,20 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
             parentFrame.dispose();
         }
 
+        /**
+         * A message getter függvénye
+         *
+         * @return a kiírni kívánt üzenet
+         */
         public String getMessage() {
             return message;
         }
 
+        /**
+         * A message setter függvénye
+         *
+         * @param message az üzenet
+         */
         public void setMessage(String message) {
             this.message = message;
         }
@@ -325,6 +475,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     public ArrayList<Piece> getPieces() {
         return pieces;
     }
+
 
     public JPanel getChessBoard() {
         return chessBoard;

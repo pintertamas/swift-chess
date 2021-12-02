@@ -5,6 +5,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 
+/**
+ * Egyedi kinézetet ad a gomboknak
+ * forrás: https://stackoverflow.com/questions/23698092/design-button-in-java-like-in-css
+ */
 public class StyledButtonUI extends BasicButtonUI {
 
     @Override

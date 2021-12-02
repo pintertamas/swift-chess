@@ -7,13 +7,19 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * A menüér felelős osztály
+ */
 public class Menu extends JFrame {
-
     JButton loadButton;
     JButton newButton;
     JButton exitButton;
     Checkbox againstRobot;
 
+    /**
+     * Konstruktor
+     * létrehozza az ablakot és megjeleníti
+     */
     public Menu() {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Menu");
@@ -25,8 +31,14 @@ public class Menu extends JFrame {
         });
     }
 
+    /**
+     * A menün található elemekért felelős belső osztály
+     */
     public class MenuPane extends JPanel {
-
+        /**
+         * Konstruktor
+         * Létrehozza a menü elemeit, beállítja a kattintás esemény hatására elvárt műveleteket és hozzáadja a menühöz az elemeket
+         */
         public MenuPane() {
             setBorder(new EmptyBorder(10, 10, 10, 10));
             setLayout(new GridBagLayout());
@@ -48,7 +60,6 @@ public class Menu extends JFrame {
             loadButton.setUI(new StyledButtonUI());
             exitButton.setUI(new StyledButtonUI());
             newButton.addActionListener(e -> {
-
                 ChessBoard chessBoard = new ChessBoard(againstRobot.getState());
                 setOnClose(chessBoard);
             });
@@ -67,6 +78,10 @@ public class Menu extends JFrame {
             add(exitButton, gbc);
         }
 
+        /**
+         * A menü becsukásakor történő eseményekért felelős
+         * @param chessBoard ennek a sakktáblának a becsukásakor létrejövő eseményre feliratkozik
+         */
         private void setOnClose(ChessBoard chessBoard) {
             chessBoard.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override

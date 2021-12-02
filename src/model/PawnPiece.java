@@ -9,6 +9,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * A gyalogokat reprezentálja
+ */
 public class PawnPiece extends Piece {
     boolean firstMove;
 
@@ -66,6 +69,14 @@ public class PawnPiece extends Piece {
         return hittingMoves;
     }
 
+    /**
+     * Kezeli a ferde lépéseket mivel a gyalogok nem tudnak arra lépni, csak ha ütnek is
+     * @param include ezt a mezőt is figyelembe veszi (ide akar lépni a körön lévő bábu)
+     * @param exclude ezt a mezőt nem veszi figyelembe (innen akar ellépni a körön lévő bábu)
+     * @param movingPoints ehhez a tömbhöz adja hozzá az esetleges plusz lépéseket
+     * @param newYSingleStep ennyit lép az Y tengelyen
+     * @param newX ennyit lép az X tengelyen
+     */
     private void handleObliqueMoves(Point include, Point exclude, boolean[][] movingPoints, int newYSingleStep, int newX) {
         if (!Functions.isOutside(newX, newYSingleStep)) {
             for (Piece piece : getBoard().getPieces()) {
