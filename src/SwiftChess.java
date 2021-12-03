@@ -6,7 +6,7 @@ import controller.Menu;
 public class SwiftChess {
     /**
      * Elindítja a Menüt
-     * @param args
+     * @param args args
      */
     public static void main(String[] args) {
         new Menu();
