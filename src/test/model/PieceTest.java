@@ -32,6 +32,9 @@ class PieceTest {
         p3.init(getChessBoard().getPieces());
     }
 
+    /**
+     * Leteszteli hogy jól állapítja-e meg a program hogy tud-e az adott mezőre lépni a bábu
+     */
     @Test
     void canMoveTo() {
         Piece p4 = new PawnPiece(PieceColor.WHITE, 12, getChessBoard());
@@ -39,6 +42,9 @@ class PieceTest {
         assertTrue(p4.canMoveTo(5, 1, new Point(-1, -1)));
     }
 
+    /**
+     * Leteszteli hogy jól állapytja-e meg a program hogy tud-e tovább lépni a bábu
+     */
     @Test
     void hasMoves() {
         assertTrue(p3.hasMoves());
@@ -47,6 +53,9 @@ class PieceTest {
         assertFalse(p4.hasMoves());
     }
 
+    /**
+     * Leteszteli hogy jól választ-e random lépést a program
+     */
     @Test
     void pickRandomMove() {
         Point randomPoint = p3.pickRandomMove();
@@ -55,17 +64,26 @@ class PieceTest {
         assertNotEquals(new Point(5, 1), randomPoint);
     }
 
+    /**
+     * Leteszteli hogy jól állapítja-e meg a program hogy az adott mezőre léphet-e a bábu és van-e adott színű bábu a mezőn
+     */
     @Test
     void isFreeFromColorAndValid() {
         assertTrue(p2.isFreeFromColorAndValid(2, 1, PieceColor.WHITE, new Point(-1, -1), new Point(-1, -1)));
     }
 
+    /**
+     * Leteszteli hogy jól detektálja-e a program hogy a választott csapat sakkban van-e
+     */
     @Test
     void selectedTeamIsInChess() {
         assertTrue(p0.selectedTeamIsInChess(new Point(-1, -1), new Point(-1, -1), PieceColor.BLACK));
         assertTrue(p0.selectedTeamIsInChess(new Point(-1, -1), new Point(-1, -1), PieceColor.WHITE));
     }
 
+    /**
+     * Leteszteli hogy jól adja-e vissza a koordinátákat a program a griden található pozíció alapján
+     */
     @Test
     void getXLocationFromComponentNumber() {
         assertEquals(p1.getCurrentLocation().x, p1.getXLocationFromComponentNumber());
