@@ -18,7 +18,7 @@ public class Database {
      * @param againstRobot robot ellen megy-e a játék
      * @return a betöltött játék
      */
-    public ChessBoard loadGame(boolean againstRobot) {
+    public static ChessBoard loadGame(boolean againstRobot) {
         File f = new File(fileName);
         if (f.exists()) {
             try {
@@ -40,7 +40,7 @@ public class Database {
      * Elmenti a játékot
      * @param chessBoard ezt menti el
      */
-    public void saveGame(ChessBoard chessBoard) {
+    public static void saveGame(ChessBoard chessBoard) {
         try {
             FileOutputStream fileOut = new FileOutputStream(fileName);
             ObjectOutputStream out = new ObjectOutputStream(fileOut);

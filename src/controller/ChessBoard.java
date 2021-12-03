@@ -95,7 +95,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     /**
      * Hozzáadja a sakktáblához, ezzel pedig kirajzolja a bábukat a képernyőre
      */
-    private void drawPieces() {
+    public void drawPieces() {
         for (Piece piece : getPieces()) {
             JPanel panel = (JPanel) getChessBoard().getComponent(piece.getBoardLocation());
             panel.add(piece);
@@ -449,7 +449,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
                 setMessage("Black surrendered!");
             }
             JOptionPane.showMessageDialog(getChessBoard(), getMessage());
-            new Database().saveGame(new ChessBoard(isAgainstRobot()));
+            Database.saveGame(new ChessBoard(isAgainstRobot()));
             parentFrame.dispose();
         }
 

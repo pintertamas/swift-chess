@@ -64,7 +64,7 @@ public class Menu extends JFrame {
                 setOnClose(chessBoard);
             });
             loadButton.addActionListener(e -> {
-                ChessBoard chessBoard = new Database().loadGame(againstRobot.getState());
+                ChessBoard chessBoard = Database.loadGame(againstRobot.getState());
                 setOnClose(chessBoard);
             });
             exitButton.addActionListener(e -> {
@@ -86,7 +86,7 @@ public class Menu extends JFrame {
             chessBoard.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                    new Database().saveGame(chessBoard);
+                    Database.saveGame(chessBoard);
                 }
             });
             chessBoard.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
