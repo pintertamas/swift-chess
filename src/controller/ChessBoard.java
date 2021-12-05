@@ -206,8 +206,6 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         setChessPiece(null);
         Component c = getChessBoard().findComponentAt(pixelX, pixelY);
 
-        System.out.println(c.getClass());
-
         if (c.getClass().equals(JPanel.class))
             return;
 
@@ -278,21 +276,21 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
      * @param pixelY a kívánt új pozíció Y pozíciója pixelben
      */
     private void handleMove(int newX, int newY, int pixelX, int pixelY) {
+        checkIfLost();
+
         Component component;
 
         if ((isYourTurn()
                 && getChessPiece().canMoveTo(newX, newY, getChessPiece().getCurrentLocation()))) {
-            PieceColor enemyColor = getChessPiece().getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-
-            //TODO a király tud sakkba lépni
+            //PieceColor enemyColor = getChessPiece().getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
             if ((wasNotInChess() &&
-                    (!getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), getChessPiece().getCurrentLocation(), getChessPiece().getColor())
-                            || (!getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), getChessPiece().getCurrentLocation(), enemyColor))))) {
+                    (!getChessPiece().selectedTeamIsInChess(new Point(newX, newY), getChessPiece().getCurrentLocation(), getChessPiece().getColor())))) {
                 checkChess(newX, newY);
                 getChessPiece().placementUpdate(newX, newY, getPieces());
                 component = getChessBoard().findComponentAt(pixelX, pixelY);
                 setWhiteTurn(!isWhiteTurn());
-            } else if (!wasNotInChess() && getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), new Point(newX, newY), getChessPiece().getColor())) {
+            } else if (!wasNotInChess()
+                    && !getChessPiece().selectedTeamIsInChess(new Point(newX, newY), getChessPiece().getCurrentLocation(), getChessPiece().getColor())) {
                 revokeChess();
                 getChessPiece().placementUpdate(newX, newY, getPieces());
                 component = getChessBoard().findComponentAt(pixelX, pixelY);
@@ -306,9 +304,12 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
             getChessPiece().setVisible(false);
             getChessPiece().setLocation(getChessPiece().getLastLocation());
             component = getChessBoard().findComponentAt(getChessPiece().getLocation());
+            checkIfLost();
         }
         Container parent = (Container) component;
         parent.add(getChessPiece());
+        checkIfLost();
+        changePawnToQueen();
         getChessPiece().setVisible(true);
         checkChess(getChessPiece().getCurrentLocation().x, getChessPiece().getCurrentLocation().y);
     }
@@ -330,7 +331,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
      */
     private void checkChess(int newX, int newY) {
         PieceColor enemyColor = getChessPiece().getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
-        if (getChessPiece().selectedTeamIsInChess(getChessPiece().getCurrentLocation(), new Point(newX, newY), enemyColor)) {
+        if (getChessPiece().selectedTeamIsInChess(new Point(newX, newY), getChessPiece().getCurrentLocation(), enemyColor)) {
             if (enemyColor == PieceColor.WHITE) {
                 setWhiteChess(true);
                 System.out.println("Black says: CHESS!");
@@ -341,15 +342,38 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
     }
 
-    /*public void printBoard(boolean[][] array) {
+    public void printBoard(boolean[][] array) {
         System.out.println();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                System.out.print(array[i][j] ? "1 " : "0 ");
+                System.out.print(array[j][i] ? "1 " : "0 ");
             }
             System.out.println();
         }
-    }*/
+    }
+
+    private void checkIfLost() {
+        if (checkIfTeamLost(PieceColor.WHITE)) {
+            System.out.println("White lost");
+        }
+        if (checkIfTeamLost(PieceColor.BLACK)) {
+            System.out.println("Black lost");
+        }
+    }
+
+    private boolean checkIfTeamLost(PieceColor color) {
+        boolean teamLost = true;
+        for (Piece piece : getPieces()) {
+            if (piece.getColor().equals(color) && piece.hasMoves()) {
+                System.out.println(piece.getCurrentLocation());
+                teamLost = false;
+                break;
+            }
+        }
+        if (teamLost)
+            System.out.println("asdasd");
+        return teamLost;
+    }
 
     /**
      * Visszavonja a sakkot a csapatának
@@ -381,16 +405,15 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
      * @param e az esemény
      */
     public void mouseClicked(MouseEvent e) {
+    }
+
+    private void changePawnToQueen() {
         if (getChessPiece() != null) {
             if (getChessPiece().getType() == PieceType.PAWN
                     && (getChessPiece().getCurrentLocation().y == 1
                     || getChessPiece().getCurrentLocation().y == 8)) {
-                Piece queen = new QueenPiece(getChessPiece().getColor(), 0, this);
-                queen.setCurrentLocation(getChessPiece().getLastLocation());
-                queen.setSize(getChessPiece().getWidth(), getChessPiece().getHeight());
-                queen.setIcon(queen.getImage());
-                getChessPiece().getParent().add(queen);
-                getPieces().add(queen);
+                Piece queen = new QueenPiece(getChessPiece().getColor(), getChessPiece().getBoardLocation(), getChessPiece().getBoard());
+                queen.init(getPieces());
                 getChessPiece().removeFrom(getPieces());
             }
         }
@@ -445,12 +468,15 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == 87) {
                 setMessage("White surrendered!");
+                JOptionPane.showMessageDialog(getChessBoard(), getMessage());
+                Database.saveGame(new ChessBoard(isAgainstRobot()));
+                parentFrame.dispose();
             } else if (e.getKeyCode() == 66) {
                 setMessage("Black surrendered!");
+                JOptionPane.showMessageDialog(getChessBoard(), getMessage());
+                Database.saveGame(new ChessBoard(isAgainstRobot()));
+                parentFrame.dispose();
             }
-            JOptionPane.showMessageDialog(getChessBoard(), getMessage());
-            Database.saveGame(new ChessBoard(isAgainstRobot()));
-            parentFrame.dispose();
         }
 
         /**
