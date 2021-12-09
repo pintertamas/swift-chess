@@ -75,7 +75,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
      */
     private void addWhitePieces() {
         addPawns(PieceColor.WHITE, 48);
-        addRoyalFamily(PieceColor.WHITE, 59, 60);
+        addRoyalFamily(PieceColor.WHITE, 60, 59);
         addBishops(PieceColor.WHITE, 58, 61);
         addKnights(PieceColor.WHITE, 57, 62);
         addRooks(PieceColor.WHITE, 56, 63);
@@ -86,7 +86,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
      */
     private void addBlackPieces() {
         addPawns(PieceColor.BLACK, 8);
-        addRoyalFamily(PieceColor.BLACK, 3, 4);
+        addRoyalFamily(PieceColor.BLACK, 4, 3);
         addBishops(PieceColor.BLACK, 2, 5);
         addKnights(PieceColor.BLACK, 1, 6);
         addRooks(PieceColor.BLACK, 0, 7);
