@@ -263,6 +263,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
                     randomPieceNextLocation.x * 80 - 40,
                     randomPieceNextLocation.y * 80 - 40);
         } catch (Exception e) {
+            System.out.println("Error");
             setWhiteTurn(false); //try again
         }
     }
@@ -309,7 +310,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         Container parent = (Container) component;
         parent.add(getChessPiece());
         checkIfLost();
-        changePawnToQueen();
+        //changePawnToQueen();
         getChessPiece().setVisible(true);
         checkChess(getChessPiece().getCurrentLocation().x, getChessPiece().getCurrentLocation().y);
     }
@@ -407,6 +408,9 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     public void mouseClicked(MouseEvent e) {
     }
 
+    /**
+     * Lecseréli a gyalogot királynőre
+     */
     private void changePawnToQueen() {
         if (getChessPiece() != null) {
             if (getChessPiece().getType() == PieceType.PAWN
