@@ -28,7 +28,6 @@ public class KingPiece extends Piece {
         checkMoves(include, exclude, movingPoints, -1, 0);
         checkMoves(include, exclude, movingPoints, -1, -1);
 
-        //getBoard().printBoard(movingPoints);
         return movingPoints;
     }
 

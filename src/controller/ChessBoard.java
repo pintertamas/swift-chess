@@ -262,7 +262,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
                     randomPieceNextLocation.x * 80 - 40,
                     randomPieceNextLocation.y * 80 - 40);
         } catch (Exception e) {
-            System.out.println("Error");
+            //System.out.println("Error");
             setWhiteTurn(false); //try again
         }
     }
@@ -378,7 +378,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         boolean teamLost = true;
         for (Piece piece : getPieces()) {
             if (piece.getColor().equals(color) && piece.hasMoves()) {
-                System.out.println(piece.getCurrentLocation());
+                //System.out.println(piece.getCurrentLocation());
                 teamLost = false;
                 break;
             }

@@ -114,7 +114,7 @@ public abstract class Piece extends JLabel implements Serializable {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (canMoveTo(i, j, new Point(-1, -1)) && !selectedTeamIsInChess(new Point(i, j), getCurrentLocation(), getColor())) {
-                    System.out.println(i + 1 + " " + (j + 1));
+                    //System.out.println(i + 1 + " " + (j + 1));
                     return true;
                 }
             }
@@ -228,7 +228,7 @@ public abstract class Piece extends JLabel implements Serializable {
             if (!pieces.get(i).getColor().equals(this.getColor())) {
                 if (pieces.get(i).getCurrentLocation().equals(new Point(newX, newY))) {
                     if (pieces.get(i).getType().equals(PieceType.KING)) {
-                        System.out.println("The king of alliance " + pieces.get(i).getColor() + " has fallen!");
+                        //System.out.println("The king of alliance " + pieces.get(i).getColor() + " has fallen!");
                     }
                     pieces.get(i).removeFrom(pieces);
                 }
@@ -282,12 +282,12 @@ public abstract class Piece extends JLabel implements Serializable {
 
         if (this.equals(king)) {
             if (dangerZone[include.x - 1][include.y - 1]) {
-                System.out.println("Your king is in danger");
+                //System.out.println("Your king is in danger");
                 getBoard().printBoard(dangerZone);
                 return true;
             } else return false;
         } else if (dangerZone[king.getCurrentLocation().x - 1][king.getCurrentLocation().y - 1]) {
-            System.out.println("Your king is in danger");
+            //System.out.println("Your king is in danger");
             return true;
         } else return false;
     }
