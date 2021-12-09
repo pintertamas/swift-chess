@@ -310,7 +310,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         Container parent = (Container) component;
         parent.add(getChessPiece());
         checkIfLost();
-        //changePawnToQueen();
+        changePawnToQueen();
         getChessPiece().setVisible(true);
         checkChess(getChessPiece().getCurrentLocation().x, getChessPiece().getCurrentLocation().y);
     }
@@ -418,6 +418,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
                     || getChessPiece().getCurrentLocation().y == 8)) {
                 Piece queen = new QueenPiece(getChessPiece().getColor(), getChessPiece().getBoardLocation(), getChessPiece().getBoard());
                 queen.init(getPieces());
+                getChessPiece().getParent().add(queen);
                 getChessPiece().removeFrom(getPieces());
             }
         }
