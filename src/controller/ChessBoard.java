@@ -343,6 +343,10 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
     }
 
+    /**
+     * Kiírja a táblát a konzolra
+     * @param array ezt a tömböt rajzolja ki a pályára
+     */
     public void printBoard(boolean[][] array) {
         System.out.println();
         for (int i = 0; i < 8; i++) {
@@ -353,6 +357,9 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
     }
 
+    /**
+     * Leellenőrzi hogy vesztett-e valamelyik csapat
+     */
     private void checkIfLost() {
         if (checkIfTeamLost(PieceColor.WHITE)) {
             System.out.println("White lost");
@@ -362,6 +369,11 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         }
     }
 
+    /**
+     * Leellenőrzi hogy vesztett-e az adott csapat
+     * @param color az a csapat
+     * @return vesztett-e
+     */
     private boolean checkIfTeamLost(PieceColor color) {
         boolean teamLost = true;
         for (Piece piece : getPieces()) {
