@@ -283,7 +283,7 @@ public abstract class Piece extends JLabel implements Serializable {
         if (this.equals(king)) {
             if (dangerZone[include.x - 1][include.y - 1]) {
                 //System.out.println("Your king is in danger");
-                getBoard().printBoard(dangerZone);
+                //getBoard().printBoard(dangerZone);
                 return true;
             } else return false;
         } else if (dangerZone[king.getCurrentLocation().x - 1][king.getCurrentLocation().y - 1]) {

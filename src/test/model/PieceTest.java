@@ -47,7 +47,7 @@ class PieceTest {
      */
     @Test
     void hasMoves() {
-        assertTrue(p3.hasMoves());
+        assertFalse(p3.hasMoves());
         Piece p4 = new PawnPiece(PieceColor.WHITE, 7, getChessBoard());
         p4.init(getChessBoard().getPieces());
         assertFalse(p4.hasMoves());
