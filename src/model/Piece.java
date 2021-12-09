@@ -111,10 +111,9 @@ public abstract class Piece extends JLabel implements Serializable {
      * @return tud-e lépni a bábu
      */
     public boolean hasMoves() {
-        boolean[][] moves = getMoves(getCurrentLocation(), getCurrentLocation());
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (moves[i][j]) {
+                if (canMoveTo(i, j, new Point(-1, -1)) && !selectedTeamIsInChess(new Point(i, j), getCurrentLocation(), getColor())) {
                     System.out.println(i + 1 + " " + (j + 1));
                     return true;
                 }
