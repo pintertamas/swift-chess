@@ -6,6 +6,8 @@ import model.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.Serializable;
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -363,9 +365,28 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
     private void checkIfLost() {
         if (checkIfTeamLost(PieceColor.WHITE)) {
             System.out.println("White lost");
+            simulateKeyPress(KeyEvent.VK_W);
         }
         if (checkIfTeamLost(PieceColor.BLACK)) {
             System.out.println("Black lost");
+            simulateKeyPress(KeyEvent.VK_B);
+        }
+
+    }
+
+    /**
+     * Szimulál egy gombnyomást
+     */
+    private void simulateKeyPress(int keyCode) {
+        try {
+            Robot robot = new Robot();
+
+            // Simulate a key press
+            robot.keyPress(keyCode);
+            robot.keyRelease(keyCode);
+
+        } catch (AWTException e) {
+            e.printStackTrace();
         }
     }
 
