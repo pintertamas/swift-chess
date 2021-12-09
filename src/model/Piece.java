@@ -213,7 +213,6 @@ public abstract class Piece extends JLabel implements Serializable {
         int newY = getCurrentLocation().y + relY;
         if (this.isFreeFromColorAndValid(newX, newY, this.getColor(), include, exclude) && !Functions.isOutside(newX, newY)) {
             moves[newX - 1][newY - 1] = true;
-            //System.out.println(getType() + " can move to " + new Point(newX, newY));
         }
     }
 
@@ -251,8 +250,6 @@ public abstract class Piece extends JLabel implements Serializable {
      */
     public boolean[][] addMovesTo(Point include, Point exclude, boolean[][] moves) {
         boolean[][] possibleMoves = getMoves(include, exclude);
-        //System.out.println(getType() + " - " + getCurrentLocation());
-        //getBoard().printBoard(possibleMoves);
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (possibleMoves[i][j]) {
@@ -292,7 +289,6 @@ public abstract class Piece extends JLabel implements Serializable {
             } else return false;
         } else if (dangerZone[king.getCurrentLocation().x - 1][king.getCurrentLocation().y - 1]) {
             System.out.println("Your king is in danger");
-            //getBoard().printBoard(dangerZone);
             return true;
         } else return false;
     }

@@ -183,7 +183,6 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
         while (!(randomPiece.hasMoves() && randomPiece.getColor().equals(PieceColor.BLACK))) {
             randomPiece = getPieces().get(random.nextInt(getPieces().size()));
         }
-        System.out.println(randomPiece);
         return randomPiece;
     }
 
@@ -300,6 +299,7 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
                 getChessPiece().setVisible(false);
                 getChessPiece().setLocation(getChessPiece().getLastLocation());
                 component = getChessBoard().findComponentAt(getChessPiece().getLocation());
+                checkIfLost();
             }
         } else {
             getChessPiece().setVisible(false);
@@ -371,8 +371,6 @@ public class ChessBoard extends JFrame implements MouseListener, MouseMotionList
                 break;
             }
         }
-        if (teamLost)
-            System.out.println("asdasd");
         return teamLost;
     }
 

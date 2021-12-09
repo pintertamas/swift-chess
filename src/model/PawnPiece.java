@@ -57,7 +57,6 @@ public class PawnPiece extends Piece {
     @Override
     public boolean[][] addMovesTo(Point include, Point exclude, boolean[][] moves) {
         boolean[][] hittingMoves = super.addMovesTo(include, exclude, moves);
-        //System.out.println();
         int direction = getColor() == PieceColor.WHITE ? 1 : -1;
 
         if (!Functions.isOutside(getCurrentLocation().y - direction))

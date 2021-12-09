@@ -25,9 +25,6 @@ public class RookPiece extends Piece {
         checkLongMoves(include, exclude, movingPoints, 1, 0);
         checkLongMoves(include, exclude, movingPoints, -1, 0);
 
-        //System.out.println(getColor() + " " + getCurrentLocation());
-        //getBoard().printBoard(movingPoints);
-
         return movingPoints;
     }
 
